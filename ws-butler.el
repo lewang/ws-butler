@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 2
+;;     Update #: 3
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -139,13 +139,13 @@ save."
         (highlight-changes-mode 1)
         (add-hook 'before-save-hook 'ws-butler-before-save t t)
         (add-hook 'after-save-hook 'ws-butler-after-save t t)
-        (add-hook 'after-revert-hook 'ws-butler-before-revert t t)
+        (add-hook 'before-revert-hook 'ws-butler-before-revert t t)
         (add-hook 'after-revert-hook 'ws-butler-after-save t t)
         (add-hook 'edit-server-done-hook 'ws-butler-before-save t t))
     (highlight-changes-mode 0)
     (remove-hook 'before-save-hook 'ws-butler-before-save t)
     (remove-hook 'after-save-hook 'ws-butler-after-save t)
-    (remove-hook 'after-revert-hook 'ws-butler-before-revert t)
+    (remove-hook 'before-revert-hook 'ws-butler-before-revert t)
     (remove-hook 'after-revert-hook 'ws-butler-after-save t)
     (remove-hook 'edit-server-done-hook 'ws-butler-before-save t)))
 
