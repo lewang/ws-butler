@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 3
+;;     Update #: 5
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -21,7 +21,10 @@
 ;;; Installation:
 
 ;;
+;; To enable for all ruby-mode buffers, add to .emacs.el:
 ;;
+;;      (require 'ws-butler)
+;;      (add-hook 'ruby-mode-hook 'ws-butler-mode)
 ;;
 
 ;;; Commentary:
