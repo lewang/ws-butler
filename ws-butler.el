@@ -99,7 +99,6 @@ point."
                         (point-at-bol))
              end (progn (goto-char end)
                         (point-at-eol))))
-     (message (format "-----------point is %s" (point)))
      (when (and (>= (point) beg)
                 (<= (point) end))
        (setq ws-butler-saved-ws (when (and (looking-at-p "\\s-*$")
