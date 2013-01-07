@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 5
+;;     Update #: 6
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -132,7 +132,7 @@ etc.
 Change visibility can be toggled with
 `highlight-changes-visible-mode', but changes get reset on every
 save."
-  :lighter " tr"
+  :lighter " wb"
   :group 'ws-butler
   (if ws-butler-mode
       (progn
