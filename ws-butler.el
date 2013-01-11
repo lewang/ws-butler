@@ -1,11 +1,11 @@
-;;; ws-butler.el --- unobstrusively remove trailing whitespace
+;;; ws-butler.el --- unobtrusively remove trailing whitespace
 
 ;; this file is not part of Emacs
 
 ;; Copyright (C) 2013 Le Wang
 ;; Author: Le Wang
 ;; Maintainer: Le Wang
-;; Description: unobstrusively remove trailing whitespace
+;; Description: unobtrusively remove trailing whitespace
 ;; Author: Le Wang
 ;; Maintainer: Le Wang
 
@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 6
+;;     Update #: 8
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
