@@ -152,5 +152,7 @@ save."
     (remove-hook 'edit-server-done-hook 'ws-butler-before-save t)))
 
 
+(provide 'ws-butler)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ws-butler.el ends here
