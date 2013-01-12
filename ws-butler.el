@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 8
+;;     Update #: 18
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -56,8 +56,13 @@
 
 (eval-when-compile (require 'cl))
 
-(defun ws-butler-trim-region (beg end)
-  "Delete trailing blanks in region BEG END."
+(defun ws-butler-clean-region (beg end)
+  "Delete trailing blanks in region BEG END.
+
+If `indent-tabs-mode' is nil, then tabs in indentation is
+replaced by spaces.
+
+"
   (interactive "*r")
   (save-excursion
     (save-restriction
@@ -65,14 +70,21 @@
       ;;  _much slower would be:       (replace-regexp "[ \t]+$" "")
       (goto-char (point-min))
       (while (not (eobp))
+        ;; convert leading tabs to spaces
+        (unless indent-tabs-mode
+          (let ((eol (point-at-eol)))
+            (skip-chars-forward " " (point-at-eol))
+            (when (= (char-after) ?\t)
+              (untabify (point) (progn (skip-chars-forward " \t" (point-at-eol))
+                                       (point))))))
         (end-of-line)
         (delete-horizontal-space)
         (forward-line 1))))
   nil)                                  ;for possible hook
 
 
-(defvar ws-butler-saved-ws nil)
-(make-variable-buffer-local 'ws-butler-saved-ws)
+(defvar ws-butler-presave-col nil)
+(make-variable-buffer-local 'ws-butler-presave-col)
 
 (defun ws-butler-map-map-changes (func &optional start-position end-position)
   "See `hilit-chg-map-changes'.  This simply uses an end marker
@@ -94,7 +106,7 @@
 This will also ensure point doesn't jump due to white space
 trimming.  (i.e. keep whitespace after EOL text but before
 point."
-  (setq ws-butler-saved-ws nil)
+  (setq ws-butler-presave-col nil)
   (ws-butler-map-map-changes
    (lambda (_prop beg end)
      (save-excursion
@@ -104,10 +116,10 @@ point."
                         (point-at-eol))))
      (when (and (>= (point) beg)
                 (<= (point) end))
-       (setq ws-butler-saved-ws (when (and (looking-at-p "\\s-*$")
+       (setq ws-butler-presave-col (when (and (looking-at-p "\\s-*$")
                                            (looking-back "\\s-+" (line-beginning-position) t))
-                                   (match-string 0))))
-     (ws-butler-trim-region beg end))))
+                                      (current-column))))
+     (ws-butler-clean-region beg end))))
 
 (defun ws-butler-after-save ()
   "Restore trimmed whitespace before point."
@@ -115,13 +127,13 @@ point."
   ;; reset text properties
   (highlight-changes-mode 0)
   (highlight-changes-mode 1)
-  (when ws-butler-saved-ws
-    (insert ws-butler-saved-ws))
+  (when ws-butler-presave-col
+    (move-to-column ws-butler-presave-col t))
   (set-buffer-modified-p nil))
 
 (defun ws-butler-before-revert ()
-  "Clear `ws-butler-saved-ws'"
-  (setq ws-butler-saved-ws nil))
+  "Clear `ws-butler-presave-col'"
+  (setq ws-butler-presave-col nil))
 
 (define-minor-mode ws-butler-mode
   "White space cleanup mode implemented on top of `highlight-changes-mode'.
