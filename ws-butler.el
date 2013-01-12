@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 19
+;;     Update #: 32
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -56,6 +56,27 @@
 
 (eval-when-compile (require 'cl))
 
+(defun ws-butler-trim-eob-lines ()
+  "Delete extra newlines at end of buffer."
+  (interactive)
+  (unless buffer-read-only
+    (save-excursion
+      ;; we need to clean up multiple blank lines at EOF to just one.  Or if
+      ;; there is no blank line and there needs one, we add it.
+      (goto-char (point-max))
+      (skip-chars-backward " \t\n\v")
+      (ws-butler-clean-region (point) (point-max))
+      ;; we try to make as few buffer modifications as possible
+      (when (looking-at "\n\\(\n\\|\\'\\)")
+        (forward-char 1))
+      (when require-final-newline
+        (unless (bolp)
+          (insert "\n")))
+      (when (looking-at "\n+")
+        (replace-match ""))))
+  ;; clean return code for hooks
+  nil)
+
 (defun ws-butler-clean-region (beg end)
   "Delete trailing blanks in region BEG END.
 
@@ -80,11 +101,13 @@ replaced by spaces.
         (end-of-line)
         (delete-horizontal-space)
         (forward-line 1))))
-  nil)                                  ;for possible hook
+  ;; clean return code for hooks
+  nil)
 
 
-(defvar ws-butler-presave-col nil)
-(make-variable-buffer-local 'ws-butler-presave-col)
+(defvar ws-butler-presave-coord nil
+  "saved list of (LINE COLUMN)")
+(make-variable-buffer-local 'ws-butler-presave-coord)
 
 (defun ws-butler-map-changes (func &optional start-position end-position)
   "See `hilit-chg-map-changes'.  This simply uses an end marker
@@ -106,20 +129,29 @@ replaced by spaces.
 This will also ensure point doesn't jump due to white space
 trimming.  (i.e. keep whitespace after EOL text but before
 point."
-  (setq ws-butler-presave-col nil)
-  (ws-butler-map-changes
-   (lambda (_prop beg end)
-     (save-excursion
-       (setq beg (progn (goto-char beg)
-                        (point-at-bol))
-             end (progn (goto-char end)
-                        (point-at-eol))))
-     (when (and (>= (point) beg)
-                (<= (point) end))
-       (setq ws-butler-presave-col (when (and (looking-at-p "\\s-*$")
-                                           (looking-back "\\s-+" (line-beginning-position) t))
-                                      (current-column))))
-     (ws-butler-clean-region beg end))))
+  (setq ws-butler-presave-coord nil)
+  (let (last-end)
+    (ws-butler-map-changes
+     (lambda (_prop beg end)
+       (save-excursion
+         (setq beg (progn (goto-char beg)
+                          (point-at-bol))
+               end (progn (goto-char end)
+                          (point-at-eol))))
+       (when (and (>= (point) beg)
+                  (<= (point) end))
+         (setq ws-butler-presave-coord (list
+                                        (line-number-at-pos (point))
+                                        (current-column))))
+       (ws-butler-clean-region beg end)
+       (setq last-end end)))
+    ;; trim EOF newlines if required
+    (when last-end
+      (goto-char (point-max))
+      (skip-chars-backward " \t\n\v")
+      (let ((printable-point-max (point)))
+        (when (>= last-end printable-point-max)
+          (ws-butler-trim-eob-lines))))))
 
 (defun ws-butler-after-save ()
   "Restore trimmed whitespace before point."
@@ -127,13 +159,18 @@ point."
   ;; reset text properties
   (highlight-changes-mode 0)
   (highlight-changes-mode 1)
-  (when ws-butler-presave-col
-    (move-to-column ws-butler-presave-col t))
+  ;; go to saved line+col
+  (when ws-butler-presave-coord
+    (goto-char (point-min))
+    (let ((remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
+      (unless (= remaining-lines 0)
+        (insert (make-string remaining-lines ?\n))))
+    (move-to-column (cadr ws-butler-presave-coord) t))
   (set-buffer-modified-p nil))
 
 (defun ws-butler-before-revert ()
-  "Clear `ws-butler-presave-col'"
-  (setq ws-butler-presave-col nil))
+  "Clear `ws-butler-presave-coord'"
+  (setq ws-butler-presave-coord nil))
 
 (define-minor-mode ws-butler-mode
   "White space cleanup mode implemented on top of `highlight-changes-mode'.
