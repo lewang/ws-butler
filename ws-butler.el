@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 18
+;;     Update #: 19
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -86,7 +86,7 @@ replaced by spaces.
 (defvar ws-butler-presave-col nil)
 (make-variable-buffer-local 'ws-butler-presave-col)
 
-(defun ws-butler-map-map-changes (func &optional start-position end-position)
+(defun ws-butler-map-changes (func &optional start-position end-position)
   "See `hilit-chg-map-changes'.  This simply uses an end marker
   since we are modifying the buffer in place."
 
@@ -107,7 +107,7 @@ This will also ensure point doesn't jump due to white space
 trimming.  (i.e. keep whitespace after EOL text but before
 point."
   (setq ws-butler-presave-col nil)
-  (ws-butler-map-map-changes
+  (ws-butler-map-changes
    (lambda (_prop beg end)
      (save-excursion
        (setq beg (progn (goto-char beg)
