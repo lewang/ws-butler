@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 32
+;;     Update #: 34
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -95,7 +95,7 @@ replaced by spaces.
         (unless indent-tabs-mode
           (let ((eol (point-at-eol)))
             (skip-chars-forward " " (point-at-eol))
-            (when (= (char-after) ?\t)
+            (when (eq (char-after) ?\t )
               (untabify (point) (progn (skip-chars-forward " \t" (point-at-eol))
                                        (point))))))
         (end-of-line)
@@ -163,7 +163,7 @@ point."
   (when ws-butler-presave-coord
     (goto-char (point-min))
     (let ((remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
-      (unless (= remaining-lines 0)
+      (unless (eq remaining-lines 0)
         (insert (make-string remaining-lines ?\n))))
     (move-to-column (cadr ws-butler-presave-coord) t))
   (set-buffer-modified-p nil))
