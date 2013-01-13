@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 34
+;;     Update #: 36
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -172,6 +172,7 @@ point."
   "Clear `ws-butler-presave-coord'"
   (setq ws-butler-presave-coord nil))
 
+;;;###autoload
 (define-minor-mode ws-butler-mode
   "White space cleanup mode implemented on top of `highlight-changes-mode'.
 
@@ -200,6 +201,8 @@ save."
     (remove-hook 'after-revert-hook 'ws-butler-after-save t)
     (remove-hook 'edit-server-done-hook 'ws-butler-before-save t)))
 
+;;;###autoload
+(define-globalized-minor-mode ws-butler-global-mode ws-butler-mode ws-butler-mode)
 
 (provide 'ws-butler)
 
