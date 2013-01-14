@@ -129,7 +129,10 @@ replaced by spaces.
 This will also ensure point doesn't jump due to white space
 trimming.  (i.e. keep whitespace after EOL text but before
 point."
-  (setq ws-butler-presave-coord nil)
+  ;; save data to restore later
+  (setq ws-butler-presave-coord (list
+                                 (line-number-at-pos (point))
+                                 (current-column)))
   (let (last-end)
     (ws-butler-map-changes
      (lambda (_prop beg end)
@@ -138,11 +141,6 @@ point."
                           (point-at-bol))
                end (progn (goto-char end)
                           (point-at-eol))))
-       (when (and (>= (point) beg)
-                  (<= (point) end))
-         (setq ws-butler-presave-coord (list
-                                        (line-number-at-pos (point))
-                                        (current-column))))
        (ws-butler-clean-region beg end)
        (setq last-end end)))
     ;; trim EOF newlines if required
