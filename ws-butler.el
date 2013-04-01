@@ -13,7 +13,7 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 36
+;;     Update #: 39
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -56,24 +56,53 @@
 
 (eval-when-compile (require 'cl))
 
+(defvar ws-butler-saved)
+
+(defmacro ws-butler-with-save (&rest forms)
+  "run forms with restriction and excursion saved once"
+  `(if (and (boundp 'ws-butler-saved)
+            ws-butler-saved)
+       (progn
+         ,@forms)
+     (let ((ws-butler-saved t))
+       (save-excursion
+         (save-restriction
+           ,@forms)))))
+
 (defun ws-butler-trim-eob-lines ()
+  (ws-butler-with-save
+   (widen)
+   ;; we need to clean up multiple blank lines at EOF to just one.  Or if
+   ;; there is no blank line and there needs one, we add it.
+   (goto-char (point-max))
+   (skip-chars-backward " \t\n\v")
+   (ws-butler-clean-region (point) (point-max))
+   ;; we try to make as few buffer modifications as possible
+   (when (looking-at "\n\\(\n\\|\\'\\)")
+     (forward-char 1))
+   (when require-final-newline
+     (unless (bolp)
+       (insert "\n")))
+   (when (looking-at "\n+")
+     (replace-match ""))))
+
+(defun ws-butler-maybe-trim-eob-lines (last-modified-pos)
   "Delete extra newlines at end of buffer."
-  (interactive)
+  (interactive (list nil))
   (unless buffer-read-only
-    (save-excursion
-      ;; we need to clean up multiple blank lines at EOF to just one.  Or if
-      ;; there is no blank line and there needs one, we add it.
-      (goto-char (point-max))
-      (skip-chars-backward " \t\n\v")
-      (ws-butler-clean-region (point) (point-max))
-      ;; we try to make as few buffer modifications as possible
-      (when (looking-at "\n\\(\n\\|\\'\\)")
-        (forward-char 1))
-      (when require-final-newline
-        (unless (bolp)
-          (insert "\n")))
-      (when (looking-at "\n+")
-        (replace-match ""))))
+    (unless last-modified-pos
+      (ws-butler-map-changes
+       (lambda (_prop beg end)
+         (setq last-modified-pos end))))
+    ;; trim EOF newlines if required
+    (when last-modified-pos
+      (ws-butler-with-save
+       (widen)
+       (goto-char (point-max))
+       (skip-chars-backward " \t\n\v")
+       (let ((printable-point-max (point)))
+         (when (>= last-modified-pos printable-point-max)
+           (ws-butler-trim-eob-lines))))))
   ;; clean return code for hooks
   nil)
 
@@ -85,22 +114,21 @@ replaced by spaces.
 
 "
   (interactive "*r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      ;;  _much slower would be:       (replace-regexp "[ \t]+$" "")
-      (goto-char (point-min))
-      (while (not (eobp))
-        ;; convert leading tabs to spaces
-        (unless indent-tabs-mode
-          (let ((eol (point-at-eol)))
-            (skip-chars-forward " " (point-at-eol))
-            (when (eq (char-after) ?\t )
-              (untabify (point) (progn (skip-chars-forward " \t" (point-at-eol))
-                                       (point))))))
-        (end-of-line)
-        (delete-horizontal-space)
-        (forward-line 1))))
+  (ws-butler-with-save
+   (narrow-to-region beg end)
+   ;;  _much slower would be:       (replace-regexp "[ \t]+$" "")
+   (goto-char (point-min))
+   (while (not (eobp))
+     ;; convert leading tabs to spaces
+     (unless indent-tabs-mode
+       (let ((eol (point-at-eol)))
+         (skip-chars-forward " " (point-at-eol))
+         (when (eq (char-after) ?\t )
+           (untabify (point) (progn (skip-chars-forward " \t" (point-at-eol))
+                                    (point))))))
+     (end-of-line)
+     (delete-horizontal-space)
+     (forward-line 1)))
   ;; clean return code for hooks
   nil)
 
@@ -130,9 +158,11 @@ This will also ensure point doesn't jump due to white space
 trimming.  (i.e. keep whitespace after EOL text but before
 point."
   ;; save data to restore later
-  (setq ws-butler-presave-coord (list
-                                 (line-number-at-pos (point))
-                                 (current-column)))
+  (ws-butler-with-save
+   (widen)
+   (setq ws-butler-presave-coord (list
+                                  (line-number-at-pos (point))
+                                  (current-column))))
   (let (last-end)
     (ws-butler-map-changes
      (lambda (_prop beg end)
@@ -143,13 +173,7 @@ point."
                           (point-at-eol))))
        (ws-butler-clean-region beg end)
        (setq last-end end)))
-    ;; trim EOF newlines if required
-    (when last-end
-      (goto-char (point-max))
-      (skip-chars-backward " \t\n\v")
-      (let ((printable-point-max (point)))
-        (when (>= last-end printable-point-max)
-          (ws-butler-trim-eob-lines))))))
+    (ws-butler-maybe-trim-eob-lines last-end)))
 
 (defun ws-butler-after-save ()
   "Restore trimmed whitespace before point."
@@ -159,11 +183,13 @@ point."
   (highlight-changes-mode 1)
   ;; go to saved line+col
   (when ws-butler-presave-coord
-    (goto-char (point-min))
-    (let ((remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
-      (unless (eq remaining-lines 0)
-        (insert (make-string remaining-lines ?\n))))
-    (move-to-column (cadr ws-butler-presave-coord) t))
+    (ws-butler-with-save
+     (widen)
+     (goto-char (point-min))
+     (let ((remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
+       (unless (eq remaining-lines 0)
+         (insert (make-string remaining-lines ?\n))))
+     (move-to-column (cadr ws-butler-presave-coord) t)))
   (set-buffer-modified-p nil))
 
 (defun ws-butler-before-revert ()
