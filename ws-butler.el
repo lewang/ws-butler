@@ -158,9 +158,10 @@ replaced by spaces.
 (defun ws-butler-before-save ()
   "Trim white space before save.
 
-This will also ensure point doesn't jump due to white space
-trimming.  (i.e. keep whitespace after EOL text but before
-point, if enabled."
+If `ws-butler-keep-whitespace-before-point' is set,
+this will also ensure point doesn't jump due to white space
+trimming (i.e. keep whitespace after EOL text but before
+point)."
   ;; save data to restore later
   (ws-butler-with-save
    (widen)
