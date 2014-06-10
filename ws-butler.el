@@ -133,6 +133,10 @@ replaced by spaces.
   nil)
 
 
+(defvar ws-butler-keep-whitespace-before-point t
+  "option to keep whitespace at current point after save (default is enabled)")
+(make-variable-buffer-local 'ws-butler-keep-whitespace-before-point)
+
 (defvar ws-butler-presave-coord nil
   "saved list of (LINE COLUMN)")
 (make-variable-buffer-local 'ws-butler-presave-coord)
@@ -156,13 +160,14 @@ replaced by spaces.
 
 This will also ensure point doesn't jump due to white space
 trimming.  (i.e. keep whitespace after EOL text but before
-point."
+point, if enabled."
   ;; save data to restore later
   (ws-butler-with-save
    (widen)
-   (setq ws-butler-presave-coord (list
-                                  (line-number-at-pos (point))
-                                  (current-column))))
+   (when ws-butler-keep-whitespace-before-point
+     (setq ws-butler-presave-coord (list
+                                    (line-number-at-pos (point))
+                                    (current-column)))))
   (let (last-end)
     (ws-butler-map-changes
      (lambda (_prop beg end)
@@ -189,8 +194,8 @@ point."
      (let ((remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
        (unless (eq remaining-lines 0)
          (insert (make-string remaining-lines ?\n))))
-     (move-to-column (cadr ws-butler-presave-coord) t)))
-  (set-buffer-modified-p nil))
+     (move-to-column (cadr ws-butler-presave-coord) t))
+    (set-buffer-modified-p nil)))
 
 (defun ws-butler-before-revert ()
   "Clear `ws-butler-presave-coord'"
