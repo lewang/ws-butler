@@ -55,6 +55,17 @@
 
 (eval-when-compile (require 'cl))
 
+(defcustom ws-butler-keep-whitespace-before-point
+  "Keep whitespace at current point after save.
+
+This is particularly to preserve indentation.
+
+N.B. The spaces are removed in the file on disk.  So in a sense
+only the \"virtual\" space is preserved in the buffer.
+"
+  t)
+
+
 (defvar ws-butler-saved)
 
 (defmacro ws-butler-with-save (&rest forms)
@@ -159,15 +170,16 @@ replaced by spaces.
 (defun ws-butler-before-save ()
   "Trim white space before save.
 
-This will also ensure point doesn't jump due to white space
-trimming.  (i.e. keep whitespace after EOL text but before
-point."
+Setting `ws-butler-keep-whitespace-before-point' will also
+ensure point doesn't jump due to white space trimming.
+"
   ;; save data to restore later
-  (ws-butler-with-save
-   (widen)
-   (setq ws-butler-presave-coord (list
-                                  (line-number-at-pos (point))
-                                  (current-column))))
+  (when ws-butler-keep-whitespace-before-point
+    (ws-butler-with-save
+     (widen)
+     (setq ws-butler-presave-coord (list
+                                    (line-number-at-pos (point))
+                                    (current-column)))))
   (let (last-end)
     (ws-butler-map-changes
      (lambda (_prop beg end)
