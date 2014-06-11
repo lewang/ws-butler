@@ -76,10 +76,15 @@
    ;; there is no blank line and there needs one, we add it.
    (goto-char (point-max))
    (skip-chars-backward " \t\n\v")
-   (ws-butler-clean-region (point) (point-max))
-   ;; we try to make as few buffer modifications as possible
-   (when (looking-at "\n\\(\n\\|\\'\\)")
-     (forward-char 1))
+   (let ((saved-point (point)))
+     (ws-butler-clean-region saved-point (point-max))
+     (goto-char saved-point)
+     ;; we try to make as few buffer modifications as possible
+     ;;
+     ;; We refuse to remove final-newline regardless of the value of
+     ;; `require-final-newline'
+     (when (looking-at "\n\\(\n\\|\\'\\)")
+       (forward-char 1)))
    (when require-final-newline
      (unless (bolp)
        (insert "\n")))
