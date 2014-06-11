@@ -13,7 +13,6 @@
 ;; Version: 0.1
 ;; Last-Updated:
 ;;           By:
-;;     Update #: 39
 ;; URL: https://github.com/lewang/ws-butler
 ;; Keywords:
 ;; Compatibility: Emacs 24
@@ -60,6 +59,7 @@
 
 (defmacro ws-butler-with-save (&rest forms)
   "run forms with restriction and excursion saved once"
+  (declare (debug (body)))
   `(if (and (boundp 'ws-butler-saved)
             ws-butler-saved)
        (progn
