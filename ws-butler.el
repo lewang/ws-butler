@@ -207,8 +207,8 @@ ensure point doesn't jump due to white space trimming.
        (setq remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
       (unless (eq remaining-lines 0)
         (insert (make-string remaining-lines ?\n))))
-    (move-to-column (cadr ws-butler-presave-coord) t))
-  (set-buffer-modified-p nil))
+    (move-to-column (cadr ws-butler-presave-coord) t)
+    (set-buffer-modified-p nil)))
 
 (defun ws-butler-before-revert ()
   "Clear `ws-butler-presave-coord'"
