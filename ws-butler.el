@@ -165,7 +165,8 @@ replaced by spaces.
       (setq end (text-property-not-all start limit 'hilit-chg prop))
       (if prop
           (funcall func prop start (or end limit)))
-      (setq start end))))
+      (setq start end))
+    (set-marker limit nil)))
 
 (defun ws-butler-before-save ()
   "Trim white space before save.
