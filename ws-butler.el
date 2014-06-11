@@ -188,13 +188,14 @@ point."
   (highlight-changes-mode 1)
   ;; go to saved line+col
   (when ws-butler-presave-coord
-    (ws-butler-with-save
-     (widen)
-     (goto-char (point-min))
-     (let ((remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
-       (unless (eq remaining-lines 0)
-         (insert (make-string remaining-lines ?\n))))
-     (move-to-column (cadr ws-butler-presave-coord) t)))
+    (let (remaining-lines)
+      (ws-butler-with-save
+       (widen)
+       (goto-char (point-min))
+       (setq remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
+      (unless (eq remaining-lines 0)
+        (insert (make-string remaining-lines ?\n))))
+    (move-to-column (cadr ws-butler-presave-coord) t))
   (set-buffer-modified-p nil))
 
 (defun ws-butler-before-revert ()
