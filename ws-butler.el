@@ -1,4 +1,4 @@
-;;; ws-butler.el --- unobtrusively remove trailing whitespace
+;;; ws-butler.el --- Unobtrusively remove trailing whitespace.
 
 ;; this file is not part of Emacs
 
@@ -53,17 +53,23 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  (require 'hilit-chg))
+
+(defgroup ws-butler nil
+  "Unobtrusively whitespace deletion like a butler."
+  :group 'convenience)
 
 (defcustom ws-butler-keep-whitespace-before-point
+  t
   "Keep whitespace at current point after save.
 
 This is particularly to preserve indentation.
 
 N.B. The spaces are removed in the file on disk.  So in a sense
-only the \"virtual\" space is preserved in the buffer.
-"
-  t)
+only the \"virtual\" space is preserved in the buffer."
+  :group 'ws-butler)
 
 
 (defvar ws-butler-saved)
