@@ -10,7 +10,7 @@
 ;; Maintainer: Le Wang
 
 ;; Created: Sat Jan  5 16:49:23 2013 (+0800)
-;; Version: 0.1
+;; Version: 0.2
 ;; Last-Updated:
 ;;           By:
 ;; URL: https://github.com/lewang/ws-butler
@@ -69,7 +69,7 @@ only the \"virtual\" space is preserved in the buffer.
 (defvar ws-butler-saved)
 
 (defmacro ws-butler-with-save (&rest forms)
-  "run forms with restriction and excursion saved once"
+  "Run FORMS with restriction and excursion saved once."
   (declare (debug (body)))
   `(if (and (boundp 'ws-butler-saved)
             ws-butler-saved)
@@ -81,6 +81,8 @@ only the \"virtual\" space is preserved in the buffer.
            ,@forms)))))
 
 (defun ws-butler-trim-eob-lines ()
+  "Trim lines at EOB in efficient manner.
+Also see `require-final-newline'."
   (ws-butler-with-save
    (widen)
    ;; we need to clean up multiple blank lines at EOF to just one.  Or if
@@ -103,7 +105,7 @@ only the \"virtual\" space is preserved in the buffer.
      (replace-match ""))))
 
 (defun ws-butler-maybe-trim-eob-lines (last-modified-pos)
-  "Delete extra newlines at end of buffer."
+  "Delete extra newlines at end of buffer if LAST-MODIFIED-POS is in the patch of excess newlines."
   (interactive (list nil))
   (unless buffer-read-only
     (unless last-modified-pos
@@ -126,9 +128,7 @@ only the \"virtual\" space is preserved in the buffer.
   "Delete trailing blanks in region BEG END.
 
 If `indent-tabs-mode' is nil, then tabs in indentation is
-replaced by spaces.
-
-"
+replaced by spaces."
   (interactive "*r")
   (ws-butler-with-save
    (narrow-to-region beg end)
@@ -150,12 +150,18 @@ replaced by spaces.
 
 
 (defvar ws-butler-presave-coord nil
-  "saved list of (LINE COLUMN)")
+  "Saved list of (LINE COLUMN) used to restore point after saving.
+
+This is the key to the virtual spaces preserving indentation mechanism.")
 (make-variable-buffer-local 'ws-butler-presave-coord)
 
 (defun ws-butler-map-changes (func &optional start-position end-position)
-  "See `hilit-chg-map-changes'.  This simply uses an end marker
-  since we are modifying the buffer in place."
+  "See `hilit-chg-map-changes'.
+
+Call FUNC with each changed region (START-POSITION END-POSITION).
+
+This simply uses an end marker since we are modifying the buffer
+in place."
 
   (let ((start (or start-position (point-min)))
         (limit (copy-marker (or end-position (point-max))))
@@ -172,8 +178,7 @@ replaced by spaces.
   "Trim white space before save.
 
 Setting `ws-butler-keep-whitespace-before-point' will also
-ensure point doesn't jump due to white space trimming.
-"
+ensure point doesn't jump due to white space trimming."
   ;; save data to restore later
   (when ws-butler-keep-whitespace-before-point
     (ws-butler-with-save
@@ -214,7 +219,7 @@ ensure point doesn't jump due to white space trimming.
     (set-buffer-modified-p nil)))
 
 (defun ws-butler-before-revert ()
-  "Clear `ws-butler-presave-coord'"
+  "Clear `ws-butler-presave-coord'."
   (setq ws-butler-presave-coord nil))
 
 ;;;###autoload
