@@ -20,10 +20,16 @@
 ;;; Installation:
 
 ;;
-;; To enable for all ruby-mode buffers, add to .emacs.el:
+;; To enable for one major-mode (e.g. ruby-mode), add to .emacs.el:
 ;;
 ;;      (require 'ws-butler)
 ;;      (add-hook 'ruby-mode-hook 'ws-butler-mode)
+;;
+;; To enable for all buffers, and allow use in daemon mode:
+;;
+;;      (if (selected-frame)
+;;          (ws-butler-global-mode)
+;;        (add-hook 'after-make-frame-functions (lambda (_) (ws-butler-global-mode))))
 ;;
 
 ;;; Commentary:
@@ -241,16 +247,22 @@ save."
   :lighter " wb"
   :group 'ws-butler
   (if ws-butler-mode
-      (progn
-        (require 'hilit-chg)
-        (setq highlight-changes-visibility-initial-state nil)
-        (highlight-changes-mode 1)
-        (add-hook 'before-save-hook 'ws-butler-before-save t t)
-        (add-hook 'after-save-hook 'ws-butler-after-save t t)
-        (add-hook 'before-revert-hook 'ws-butler-before-revert t t)
-        (add-hook 'after-revert-hook 'ws-butler-after-save t t)
-        (add-hook 'edit-server-done-hook 'ws-butler-before-save t t))
-    (highlight-changes-mode 0)
+      (cond ((not (selected-frame))
+             (ws-butler-mode -1)
+             (user-error "Ws-butler needs a frame to operate.  Please install via `after-make-frame-functions' when using daemon mode"))
+            ((not (buffer-file-name))
+             (ws-butler-mode -1))
+            (t
+             (require 'hilit-chg)
+             (setq highlight-changes-visibility-initial-state nil)
+             (highlight-changes-mode 1)
+             (add-hook 'before-save-hook 'ws-butler-before-save t t)
+             (add-hook 'after-save-hook 'ws-butler-after-save t t)
+             (add-hook 'before-revert-hook 'ws-butler-before-revert t t)
+             (add-hook 'after-revert-hook 'ws-butler-after-save t t)
+             (add-hook 'edit-server-done-hook 'ws-butler-before-save t t)))
+    (when (fboundp 'highlight-changes-mode)
+      (highlight-changes-mode -1))
     (remove-hook 'before-save-hook 'ws-butler-before-save t)
     (remove-hook 'after-save-hook 'ws-butler-after-save t)
     (remove-hook 'before-revert-hook 'ws-butler-before-revert t)

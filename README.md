@@ -2,7 +2,7 @@
 
 ## ws-butler -- an unobtrusive way to trim spaces from end of line
 
-- Only lines touched get trimmed.  If the white space at end of buffer is
+- Only lines modified get trimmed.  If the white space at end of buffer is
   changed, then blank lines at the end of buffer are truncated respecting
   `require-final-newline`
 
@@ -11,7 +11,7 @@
 ## What does unobtrusive mean?
 
 The user is not made explicitly aware when trimming happens.  He keep working
-and the butler takes care of white-space for you.
+and the butler takes care of white space for you.
 
 This means if point is at a location that was trimmed, point is not moved, but
 the data on disk has been cleaned up (revert the buffer to confirm).
