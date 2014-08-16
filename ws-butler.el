@@ -69,6 +69,7 @@ This is particularly to preserve indentation.
 
 N.B. The spaces are removed in the file on disk.  So in a sense
 only the \"virtual\" space is preserved in the buffer."
+  :type 'boolean
   :group 'ws-butler)
 
 
