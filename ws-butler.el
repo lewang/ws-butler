@@ -209,13 +209,20 @@ ensure point doesn't jump due to white space trimming."
     (ws-butler-map-changes (lambda (_prop start end)
                              (remove-list-of-text-properties start end '(ws-butler-chg))))))
 
-(defun ws-butler-after-change (beg end leng-before &optional)
-  (unless undo-in-progress
-    (with-silent-modifications
-      (when (and (= beg end) (> leng-before 0))
-        ;; deletion
-        (setq end (min (+ end 1) (point-max))))
-      (put-text-property beg end 'ws-butler-chg t))))
+(defun ws-butler-after-change (beg end length-before)
+  (let ((type (if (and (= beg end) (> length-before 0))
+                  'delete
+                'chg)))
+    (if undo-in-progress
+        ;; add back deleted text during undo
+        (if (and (zerop length-before)
+               (> end beg)
+               (eq (get-text-property end 'ws-butler-chg) 'delete))
+            (remove-list-of-text-properties end (1+ end) '(ws-butler-chg)))
+      (with-silent-modifications
+        (when (eq type 'delete)
+          (setq end (min (+ end 1) (point-max))))
+        (put-text-property beg end 'ws-butler-chg type)))))
 
 (defun ws-butler-after-save ()
   "Restore trimmed whitespace before point."
