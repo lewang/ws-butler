@@ -34,6 +34,9 @@ the data on disk has been cleaned up (revert the buffer to confirm).
 3. I started experimenting with using `highlight-changes-mode` to trim only
    lines I touch on save.
 
+4. Now, the dependency to `highlight-changes-mode` has been removed and we
+   handle change changing through text properties ourselves.
+
 
 ## This is the result
 
