@@ -64,10 +64,10 @@
   t
   "Keep whitespace at current point after save.
 
-This is particularly to preserve indentation.
+That is to say, if whitespace around is trimmed, perform the
+cleanup only on disk, don't move the point in the buffer.
 
-N.B. The spaces are removed in the file on disk.  So in a sense
-only the \"virtual\" space is preserved in the buffer."
+i.e. only the \"virtual\" space is preserved in the buffer."
   :type 'boolean
   :group 'ws-butler)
 

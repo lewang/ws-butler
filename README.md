@@ -16,6 +16,12 @@ and the butler takes care of whitespace for you.
 This means if point is at a location that was trimmed, point is not moved, but
 the data on disk has been cleaned up (revert the buffer to confirm).
 
+### Not moving point because of space deletion.
+
+By default, ws-butler preserves "virtual spaces" in front of point if necessary.  The file on disk is cleaned up however.
+
+This can be disabled with `ws-butler-keep-whitespace-before-point`.
+
 ## History
 
 1. I started by trimming all spaces at EOL in source code in a
