@@ -10,7 +10,7 @@
 ;; Maintainer: Le Wang
 
 ;; Created: Sat Jan  5 16:49:23 2013 (+0800)
-;; Version: 0.2
+;; Version: 0.3
 ;; Last-Updated:
 ;;           By:
 ;; URL: https://github.com/lewang/ws-butler
@@ -54,8 +54,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  (require 'hilit-chg))
+  (require 'cl))
 
 (defgroup ws-butler nil
   "Unobtrusively whitespace deletion like a butler."
@@ -163,19 +162,17 @@ This is the key to the virtual spaces preserving indentation mechanism.")
 (make-variable-buffer-local 'ws-butler-presave-coord)
 
 (defun ws-butler-map-changes (func &optional start-position end-position)
-  "See `hilit-chg-map-changes'.
-
-Call FUNC with each changed region (START-POSITION END-POSITION).
+  "Call FUNC with each changed region (START-POSITION END-POSITION).
 
 This simply uses an end marker since we are modifying the buffer
 in place."
-
+  ;; See `hilit-chg-map-changes'.
   (let ((start (or start-position (point-min)))
         (limit (copy-marker (or end-position (point-max))))
         prop end)
     (while (and start (< start limit))
-      (setq prop (get-text-property start 'hilit-chg))
-      (setq end (text-property-not-all start limit 'hilit-chg prop))
+      (setq prop (get-text-property start 'ws-butler-chg))
+      (setq end (text-property-not-all start limit 'ws-butler-chg prop))
       (if prop
           (funcall func prop start (or end limit)))
       (setq start end))
@@ -207,12 +204,31 @@ ensure point doesn't jump due to white space trimming."
        (setq last-end end)))
     (ws-butler-maybe-trim-eob-lines last-end)))
 
+(defun ws-butler-clear-properties ()
+  "Clear all ws-butler text properties in buffer."
+  (with-silent-modifications
+    (ws-butler-map-changes (lambda (_prop start end)
+                             (remove-list-of-text-properties start end '(ws-butler-chg))))))
+
+(defun ws-butler-after-change (beg end length-before)
+  (let ((type (if (and (= beg end) (> length-before 0))
+                  'delete
+                'chg)))
+    (if undo-in-progress
+        ;; add back deleted text during undo
+        (if (and (zerop length-before)
+               (> end beg)
+               (eq (get-text-property end 'ws-butler-chg) 'delete))
+            (remove-list-of-text-properties end (1+ end) '(ws-butler-chg)))
+      (with-silent-modifications
+        (when (eq type 'delete)
+          (setq end (min (+ end 1) (point-max))))
+        (put-text-property beg end 'ws-butler-chg type)))))
+
 (defun ws-butler-after-save ()
   "Restore trimmed whitespace before point."
 
-  ;; reset text properties
-  (highlight-changes-mode 0)
-  (highlight-changes-mode 1)
+  (ws-butler-clear-properties)
   ;; go to saved line+col
   (when ws-butler-presave-coord
     (let (remaining-lines)
@@ -231,27 +247,21 @@ ensure point doesn't jump due to white space trimming."
 
 ;;;###autoload
 (define-minor-mode ws-butler-mode
-  "White space cleanup mode implemented on top of `highlight-changes-mode'.
+  "White space cleanup, without obtrusive white space removal.
 
-With this mode in operation, it's not possible to rotate changes,
-etc.
-
-Change visibility can be toggled with
-`highlight-changes-visible-mode', but changes get reset on every
-save."
+Whitespaces at EOL and EOF are trimmed upon file save, and only
+for lines modified by you."
   :lighter " wb"
   :group 'ws-butler
   (if ws-butler-mode
       (progn
-        (require 'hilit-chg)
-        (setq highlight-changes-visibility-initial-state nil)
-        (highlight-changes-mode 1)
+        (add-hook 'after-change-functions 'ws-butler-after-change t t)
         (add-hook 'before-save-hook 'ws-butler-before-save t t)
         (add-hook 'after-save-hook 'ws-butler-after-save t t)
         (add-hook 'before-revert-hook 'ws-butler-before-revert t t)
         (add-hook 'after-revert-hook 'ws-butler-after-save t t)
         (add-hook 'edit-server-done-hook 'ws-butler-before-save t t))
-    (highlight-changes-mode 0)
+    (remove-hook 'after-change-functions 'ws-butler-after-change t)
     (remove-hook 'before-save-hook 'ws-butler-before-save t)
     (remove-hook 'after-save-hook 'ws-butler-after-save t)
     (remove-hook 'before-revert-hook 'ws-butler-before-revert t)
