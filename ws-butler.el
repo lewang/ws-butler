@@ -71,6 +71,16 @@ i.e. only the \"virtual\" space is preserved in the buffer."
   :type 'boolean
   :group 'ws-butler)
 
+(defcustom ws-butler-trim-predicate
+  nil
+  "Return true for regions that should be trimmed.
+
+Expects 2 arguments - beginning and end of a region.
+Should return a truthy value for regions that should
+have their trailing whitespace trimmed.
+When not defined all regions are trimmed."
+  :type 'function
+  :group 'ws-butler)
 
 (defvar ws-butler-saved)
 
@@ -200,7 +210,9 @@ ensure point doesn't jump due to white space trimming."
                ;; always expand to end of line anyway, this should be OK.
                end (progn (goto-char (1- end))
                           (point-at-eol))))
-       (ws-butler-clean-region beg end)
+       (unless (and (functionp ws-butler-trim-predicate)
+                    (not (funcall ws-butler-trim-predicate beg end)))
+         (ws-butler-clean-region beg end))
        (setq last-end end)))
     (ws-butler-maybe-trim-eob-lines last-end)))
 

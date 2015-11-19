@@ -5,6 +5,7 @@
 
 ;; for "every" function
 (require 'cl)
+(load-file "ws-butler.el")
 
 (defmacro ws-butler-test-with-test-buffer (&rest body)
   (declare (indent 0) (debug t))
@@ -28,3 +29,16 @@
     (execute-kbd-macro (read-kbd-macro "M-DEL"))
     (should (every #'identity (list 1 2 3)))
     (should (string-equal (buffer-string) "a b "))))
+
+(ert-deftest ws-butler-test-trim-predicate ()
+  "Tests `ws-butler-trim-predicate'."
+  (ws-butler-test-with-common-setup
+   (let ((ws-butler-trim-predicate (lambda (_beg _end) false)))
+     (insert "a b c. \n")
+     (ws-butler-before-save)
+     (should (string-equal (buffer-string) "a b c. \n")))
+   (let (ws-butler-trim-predicate)
+     (erase-buffer)
+     (insert "a b c. \n")
+     (ws-butler-before-save)
+     (should (string-equal (buffer-string) "a b c.\n")))))
