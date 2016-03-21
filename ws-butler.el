@@ -255,18 +255,18 @@ for lines modified by you."
   :group 'ws-butler
   (if ws-butler-mode
       (progn
-        (add-hook 'after-change-functions 'ws-butler-after-change t t)
-        (add-hook 'before-save-hook 'ws-butler-before-save t t)
-        (add-hook 'after-save-hook 'ws-butler-after-save t t)
-        (add-hook 'before-revert-hook 'ws-butler-before-revert t t)
-        (add-hook 'after-revert-hook 'ws-butler-after-save t t)
-        (add-hook 'edit-server-done-hook 'ws-butler-before-save t t))
-    (remove-hook 'after-change-functions 'ws-butler-after-change t)
-    (remove-hook 'before-save-hook 'ws-butler-before-save t)
-    (remove-hook 'after-save-hook 'ws-butler-after-save t)
-    (remove-hook 'before-revert-hook 'ws-butler-before-revert t)
-    (remove-hook 'after-revert-hook 'ws-butler-after-save t)
-    (remove-hook 'edit-server-done-hook 'ws-butler-before-save t)))
+        (add-hook 'after-change-functions 'ws-butler-after-change t)
+        (add-hook 'before-save-hook 'ws-butler-before-save t)
+        (add-hook 'after-save-hook 'ws-butler-after-save t)
+        (add-hook 'before-revert-hook 'ws-butler-before-revert t)
+        (add-hook 'after-revert-hook 'ws-butler-after-save t)
+        (add-hook 'edit-server-done-hook 'ws-butler-before-save t))
+    (remove-hook 'after-change-functions 'ws-butler-after-change)
+    (remove-hook 'before-save-hook 'ws-butler-before-save)
+    (remove-hook 'after-save-hook 'ws-butler-after-save)
+    (remove-hook 'before-revert-hook 'ws-butler-before-revert)
+    (remove-hook 'after-revert-hook 'ws-butler-after-save)
+    (remove-hook 'edit-server-done-hook 'ws-butler-before-save)))
 
 ;;;###autoload
 (define-globalized-minor-mode ws-butler-global-mode ws-butler-mode ws-butler-mode)
