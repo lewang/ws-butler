@@ -22,6 +22,12 @@ By default, ws-butler preserves "virtual spaces" in front of point if necessary.
 
 This can be disabled with `ws-butler-keep-whitespace-before-point`.
 
+## Installation
+
+### Debian 9 or later or Ubuntu 16.10 or later
+
+`apt-get install elpa-ws-butler`
+
 ## History
 
 1. I started by trimming all spaces at EOL in source code in a
