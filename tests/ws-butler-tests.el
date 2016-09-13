@@ -14,6 +14,7 @@
        (when (get-buffer test-buffer-name)
          (kill-buffer test-buffer-name))
        (switch-to-buffer (get-buffer-create test-buffer-name))
+       (ws-butler-mode t)
        ,@body)))
 
 (defmacro ws-butler-test-with-common-setup (&rest body)
@@ -33,12 +34,14 @@
 (ert-deftest ws-butler-test-trim-predicate ()
   "Tests `ws-butler-trim-predicate'."
   (ws-butler-test-with-common-setup
-   (let ((ws-butler-trim-predicate (lambda (_beg _end) false)))
-     (insert "a b c. \n")
-     (ws-butler-before-save)
-     (should (string-equal (buffer-string) "a b c. \n")))
-   (let (ws-butler-trim-predicate)
-     (erase-buffer)
-     (insert "a b c. \n")
-     (ws-butler-before-save)
-     (should (string-equal (buffer-string) "a b c.\n")))))
+    (setq-local ws-butler-trim-predicate (lambda (_beg _end) nil))
+    (insert "a b c. \n")
+    (ws-butler-before-save)
+    (should (string-equal (buffer-string) "a b c. \n"))))
+
+(ert-deftest ws-butler-test-trim-predicate-nil ()
+  "Tests `ws-butler-trim-predicate' is nil."
+  (ws-butler-test-with-common-setup
+    (insert "a b c. \n")
+    (ws-butler-before-save)
+    (should (string-equal (buffer-string) "a b c.\n"))))

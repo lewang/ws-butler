@@ -72,7 +72,7 @@ i.e. only the \"virtual\" space is preserved in the buffer."
   :group 'ws-butler)
 
 (defcustom ws-butler-trim-predicate
-  nil
+  (lambda (_beg _end) t)
   "Return true for regions that should be trimmed.
 
 Expects 2 arguments - beginning and end of a region.
@@ -135,7 +135,8 @@ Also see `require-final-newline'."
        (goto-char (point-max))
        (skip-chars-backward " \t\n\v")
        (let ((printable-point-max (point)))
-         (when (>= last-modified-pos printable-point-max)
+         (when (and (funcall ws-butler-trim-predicate printable-point-max (point-max))
+                  (>= last-modified-pos printable-point-max))
            (ws-butler-trim-eob-lines))))))
   ;; clean return code for hooks
   nil)
@@ -193,6 +194,7 @@ in place."
 
 Setting `ws-butler-keep-whitespace-before-point' will also
 ensure point doesn't jump due to white space trimming."
+
   ;; save data to restore later
   (when ws-butler-keep-whitespace-before-point
     (ws-butler-with-save
@@ -210,8 +212,7 @@ ensure point doesn't jump due to white space trimming."
                ;; always expand to end of line anyway, this should be OK.
                end (progn (goto-char (1- end))
                           (point-at-eol))))
-       (unless (and (functionp ws-butler-trim-predicate)
-                    (not (funcall ws-butler-trim-predicate beg end)))
+       (when (funcall ws-butler-trim-predicate beg end)
          (ws-butler-clean-region beg end))
        (setq last-end end)))
     (ws-butler-maybe-trim-eob-lines last-end)))
