@@ -71,6 +71,14 @@ i.e. only the \"virtual\" space is preserved in the buffer."
   :type 'boolean
   :group 'ws-butler)
 
+(defcustom ws-butler-global-exempt-modes
+  '(markdown-mode)
+  "Don't enable ws-butler in modes that inherit from these.
+
+This should be a list of trailing whitespace significant major-modes."
+  :type '(repeat (symbol :tag "Major mode"))
+  :group 'ws-butler)
+
 
 (defvar ws-butler-saved)
 
@@ -274,7 +282,10 @@ for lines modified by you."
     (remove-hook 'edit-server-done-hook 'ws-butler-before-save t)))
 
 ;;;###autoload
-(define-globalized-minor-mode ws-butler-global-mode ws-butler-mode ws-butler-mode)
+(define-globalized-minor-mode ws-butler-global-mode ws-butler-mode
+  (lambda ()
+    (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
+      (ws-butler-mode))))
 
 (provide 'ws-butler)
 
