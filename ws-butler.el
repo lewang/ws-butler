@@ -133,20 +133,25 @@ Also see `require-final-newline'."
 (defun ws-butler-clean-region (beg end)
   "Delete trailing blanks in region BEG END.
 
-If `indent-tabs-mode' is nil, then tabs in indentation is
-replaced by spaces."
+If `indent-tabs-mode' is nil, then tabs in indentation are
+replaced by spaces, and vice versa if t."
   (interactive "*r")
   (ws-butler-with-save
    (narrow-to-region beg end)
    ;;  _much slower would be:       (replace-regexp "[ \t]+$" "")
    (goto-char (point-min))
    (while (not (eobp))
-     ;; convert leading tabs to spaces
-     (unless indent-tabs-mode
-       (let ((eol (point-at-eol)))
-         (skip-chars-forward " " (point-at-eol))
+     ;; convert leading tabs to spaces or v.v.
+     (let ((eol (point-at-eol)))
+       (if indent-tabs-mode
+           (progn
+             (skip-chars-forward "\t" eol)
+             (when (eq (char-after) ?\ )
+               (tabify (point) (progn (skip-chars-forward " \t" eol)
+                                      (point)))))
+         (skip-chars-forward " " eol)
          (when (eq (char-after) ?\t )
-           (untabify (point) (progn (skip-chars-forward " \t" (point-at-eol))
+           (untabify (point) (progn (skip-chars-forward " \t" eol)
                                     (point))))))
      (end-of-line)
      (delete-horizontal-space)
