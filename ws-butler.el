@@ -56,6 +56,13 @@
 (eval-when-compile
   (require 'cl))
 
+(eval-and-compile
+  (unless (fboundp 'setq-local)
+    (defmacro setq-local (var val)
+      "Set variable VAR to value VAL in current buffer."
+      ;; Can't use backquote here, it's too early in the bootstrap.
+      (list 'set (list 'make-local-variable (list 'quote var)) val))))
+
 (defgroup ws-butler nil
   "Unobtrusively whitespace deletion like a butler."
   :group 'convenience)
