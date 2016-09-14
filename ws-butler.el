@@ -10,7 +10,7 @@
 ;; Maintainer: Le Wang
 
 ;; Created: Sat Jan  5 16:49:23 2013 (+0800)
-;; Version: 0.4
+;; Version: 0.5
 ;; Last-Updated:
 ;;           By:
 ;; URL: https://github.com/lewang/ws-butler
