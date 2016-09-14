@@ -56,6 +56,13 @@
 (eval-when-compile
   (require 'cl))
 
+(eval-and-compile
+  (unless (fboundp 'setq-local)
+    (defmacro setq-local (var val)
+      "Set variable VAR to value VAL in current buffer."
+      ;; Can't use backquote here, it's too early in the bootstrap.
+      (list 'set (list 'make-local-variable (list 'quote var)) val))))
+
 (defgroup ws-butler nil
   "Unobtrusively whitespace deletion like a butler."
   :group 'convenience)
@@ -79,6 +86,16 @@ This should be a list of trailing whitespace significant major-modes."
   :type '(repeat (symbol :tag "Major mode"))
   :group 'ws-butler)
 
+(defcustom ws-butler-trim-predicate
+  (lambda (_beg _end) t)
+  "Return true for regions that should be trimmed.
+
+Expects 2 arguments - beginning and end of a region.
+Should return a truthy value for regions that should
+have their trailing whitespace trimmed.
+When not defined all regions are trimmed."
+  :type 'function
+  :group 'ws-butler)
 
 (defvar ws-butler-saved)
 
@@ -133,7 +150,8 @@ Also see `require-final-newline'."
        (goto-char (point-max))
        (skip-chars-backward " \t\n\v")
        (let ((printable-point-max (point)))
-         (when (>= last-modified-pos printable-point-max)
+         (when (and (funcall ws-butler-trim-predicate printable-point-max (point-max))
+                  (>= last-modified-pos printable-point-max))
            (ws-butler-trim-eob-lines))))))
   ;; clean return code for hooks
   nil)
@@ -196,6 +214,7 @@ in place."
 
 Setting `ws-butler-keep-whitespace-before-point' will also
 ensure point doesn't jump due to white space trimming."
+
   ;; save data to restore later
   (when ws-butler-keep-whitespace-before-point
     (ws-butler-with-save
@@ -213,7 +232,8 @@ ensure point doesn't jump due to white space trimming."
                ;; always expand to end of line anyway, this should be OK.
                end (progn (goto-char (1- end))
                           (point-at-eol))))
-       (ws-butler-clean-region beg end)
+       (when (funcall ws-butler-trim-predicate beg end)
+         (ws-butler-clean-region beg end))
        (setq last-end end)))
     (ws-butler-maybe-trim-eob-lines last-end)))
 

@@ -22,6 +22,16 @@ By default, ws-butler preserves "virtual spaces" in front of point if necessary.
 
 This can be disabled with `ws-butler-keep-whitespace-before-point`.
 
+#### Trimming only specific lines.
+
+There might be lines you don't want to get trimmed, e.g. spaces in multiline strings.  The behavior can be customized through `ws-butler-trim-predicate`.  This variable should hold a function that expects 2 arguments (region beginning and end) and should return true only for regions that one wants to get trimmed. As an example
+
+    (setq ws-butler-trim-predicate
+          (lambda (beg end)
+            (not (eq 'font-lock-string-face
+                     (get-text-property end 'face)))))
+
+
 ## Installation
 
 ### Debian 9 or later or Ubuntu 16.10 or later
