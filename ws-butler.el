@@ -167,18 +167,20 @@ replaced by spaces, and vice versa if t."
    ;;  _much slower would be:       (replace-regexp "[ \t]+$" "")
    (goto-char (point-min))
    (while (not (eobp))
-     ;; convert leading tabs to spaces or v.v.
-     (let ((eol (point-at-eol)))
-       (if indent-tabs-mode
-           (progn
-             (skip-chars-forward "\t" eol)
-             (when (eq (char-after) ?\ )
-               (tabify (point) (progn (skip-chars-forward " \t" eol)
-                                      (point)))))
-         (skip-chars-forward " " eol)
-         (when (eq (char-after) ?\t )
-           (untabify (point) (progn (skip-chars-forward " \t" eol)
-                                    (point))))))
+     (if (not smart-tabs-mode)
+         ;; convert leading tabs to spaces or v.v.
+         (let ((eol (point-at-eol)))
+           (if indent-tabs-mode
+               (progn
+                 (skip-chars-forward "\t" eol)
+                 (when (eq (char-after) ?\ )
+                   (tabify (point) (progn (skip-chars-forward " \t" eol)
+                                          (point)))))
+             (skip-chars-forward " " eol)
+             (when (eq (char-after) ?\t )
+               (untabify (point) (progn (skip-chars-forward " \t" eol)
+                                        (point))))))
+       nil)
      (end-of-line)
      (delete-horizontal-space)
      (forward-line 1)))
