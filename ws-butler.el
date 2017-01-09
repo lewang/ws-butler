@@ -78,6 +78,19 @@ i.e. only the \"virtual\" space is preserved in the buffer."
   :type 'boolean
   :group 'ws-butler)
 
+(defcustom ws-butler-convert-leading-tabs-or-spaces
+  nil
+  "Make leading whitespace be tabs or spaces
+
+If `indent-tabs-mode' is non-nil, call `tabify', else call
+`untabify'. Do neither if `smart-tabs-mode' is enabled for this
+buffer. This is off by default because it's unwanted if you
+occasionally edit files where leading whitespace should not be
+changed in this specific way."
+
+  :type 'boolean
+  :group 'ws-butler)
+
 (defcustom ws-butler-global-exempt-modes
   '(markdown-mode)
   "Don't enable ws-butler in modes that inherit from these.
@@ -167,18 +180,20 @@ replaced by spaces, and vice versa if t."
    ;;  _much slower would be:       (replace-regexp "[ \t]+$" "")
    (goto-char (point-min))
    (while (not (eobp))
-     ;; convert leading tabs to spaces or v.v.
-     (let ((eol (point-at-eol)))
-       (if indent-tabs-mode
-           (progn
-             (skip-chars-forward "\t" eol)
-             (when (eq (char-after) ?\ )
-               (tabify (point) (progn (skip-chars-forward " \t" eol)
-                                      (point)))))
-         (skip-chars-forward " " eol)
-         (when (eq (char-after) ?\t )
-           (untabify (point) (progn (skip-chars-forward " \t" eol)
-                                    (point))))))
+     (when (and ws-butler-convert-leading-tabs-or-spaces
+                (not (bound-and-true-p smart-tabs-mode)))
+       ;; convert leading tabs to spaces or v.v.
+       (let ((eol (point-at-eol)))
+         (if indent-tabs-mode
+             (progn
+               (skip-chars-forward "\t" eol)
+               (when (eq (char-after) ?\ )
+                 (tabify (point) (progn (skip-chars-forward " \t" eol)
+                                        (point)))))
+           (skip-chars-forward " " eol)
+           (when (eq (char-after) ?\t )
+             (untabify (point) (progn (skip-chars-forward " \t" eol)
+                                      (point)))))))
      (end-of-line)
      (delete-horizontal-space)
      (forward-line 1)))
