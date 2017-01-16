@@ -60,7 +60,4 @@ There might be lines you don't want to get trimmed, e.g. spaces in multiline str
 4. Now, the dependency on `highlight-changes-mode` has been removed and we
    handle change changing through text properties ourselves.
 
-
-## This is the result
-
 [ws-trim]: ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el
