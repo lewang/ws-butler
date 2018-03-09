@@ -42,10 +42,10 @@ There might be lines you don't want to get trimmed, e.g. spaces in multiline str
 
 To use ws-butler, require it and add ws-butler-mode as a hook on any mode
 where you would like it to be enabled. For example, to enable for all 
-ruby-mode buffers, add this to your .emacs:
+programming language modes, add this to your .emacs:
 
     (require 'ws-butler)
-    (add-hook 'ruby-mode-hook #'ws-butler-mode)
+    (add-hook 'prog-mode-hook #'ws-butler-mode)
 
 Alternatively, you can use ws-butler-global-mode to turn it on everywhere.
 
