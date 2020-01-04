@@ -140,7 +140,7 @@ Also see `require-final-newline'."
      ;;
      ;; We refuse to remove final-newline regardless of the value of
      ;; `require-final-newline'
-     (when (looking-at "\n\\(\n\\|\\'\\)")
+     (when (looking-at-p "\n\\(?:\n\\|\\'\\)")
        (forward-char 1)))
    (when require-final-newline
      (unless (bolp)
