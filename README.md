@@ -38,6 +38,17 @@ There might be lines you don't want to get trimmed, e.g. spaces in multiline str
 
 `apt-get install elpa-ws-butler`
 
+### MELPA
+If you haven't [enabled MELPA](https://melpa.org/#/getting-started),
+add the following to your `.emacs` and restart Emacs:
+
+    (require 'package)
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+    (package-initialize)
+
+Then, run `M-x package-refresh-contents RET` followed by
+`M-x package-install RET ws-butler RET` to install `ws-butler`.
+
 ### Configuration
 
 To use ws-butler, require it and add ws-butler-mode as a hook on any mode
