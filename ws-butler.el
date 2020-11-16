@@ -54,7 +54,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl))
+  (require 'cl-lib))
 
 (eval-and-compile
   (unless (fboundp 'setq-local)
