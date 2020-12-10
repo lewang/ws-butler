@@ -1,12 +1,24 @@
 language: emacs-lisp
+arch:
+  - amd64
+  - ppc64le
+jobs:
+  exclude:
+   - arch: ppc64le   
+     env: EMACS=emacs-snapshot
 before_install:
   - git submodule update --init
+  - if [ "$TRAVIS_CPU_ARCH" = 'ppc64le' ]; then
+      sudo apt-get update && 
+      sudo apt-get install -y emacs;
+    fi
   - if [ "$EMACS" = 'emacs-snapshot' ]; then
       sudo add-apt-repository -y ppa:cassou/emacs &&
       sudo apt-get update --allow-unauthenticated -qq &&
       sudo apt-get install -qq
           emacs-snapshot-el emacs-snapshot-gtk emacs-snapshot;
     fi
+ 
 env:
   - EMACS=emacs
   - EMACS=emacs-snapshot
