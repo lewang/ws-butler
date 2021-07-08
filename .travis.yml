@@ -1,14 +1,41 @@
-language: emacs-lisp
+# https://github.com/purcell/nix-emacs-ci
+language: nix
+
+cache:
+  directories:
+  - $HOME/nix.store
+
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-24-5
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-25-3
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-26-3
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-27-1
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-snapshot
+
 before_install:
-  - git submodule update --init
-  - if [ "$EMACS" = 'emacs-snapshot' ]; then
-      sudo add-apt-repository -y ppa:cassou/emacs &&
-      sudo apt-get update --allow-unauthenticated -qq &&
-      sudo apt-get install -qq
-          emacs-snapshot-el emacs-snapshot-gtk emacs-snapshot;
-    fi
-env:
-  - EMACS=emacs
-  - EMACS=emacs-snapshot
+  - sudo mkdir -p /etc/nix
+  - echo "substituters = https://cache.nixos.org/ file://$HOME/nix.store" | sudo tee -a /etc/nix/nix.conf > /dev/null
+  - echo 'require-sigs = false' | sudo tee -a /etc/nix/nix.conf > /dev/null
+
+before_cache:
+  - mkdir -p $HOME/nix.store
+  - nix copy --to file://$HOME/nix.store -f default.nix buildInputs
+
+install:
+  # The default "emacs" executable on the $PATH will now be the version named by $EMACS_CI
+  - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
+
 script:
-  make travis-ci EMACS=$EMACS
+  - emacs --version
+  - make test-nw
