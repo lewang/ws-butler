@@ -149,7 +149,8 @@ Also see `require-final-newline'."
      (replace-match ""))))
 
 (defun ws-butler-maybe-trim-eob-lines (last-modified-pos)
-  "Delete extra newlines at end of buffer if LAST-MODIFIED-POS is in the patch of excess newlines."
+  "Delete extra newlines at end of buffer.
+Do this if LAST-MODIFIED-POS is in the patch of excess newlines."
   (interactive (list nil))
   (unless buffer-read-only
     (unless last-modified-pos
@@ -183,7 +184,7 @@ replaced by spaces, and vice versa if t."
      (when (and ws-butler-convert-leading-tabs-or-spaces
                 (not (bound-and-true-p smart-tabs-mode)))
        ;; convert leading tabs to spaces or v.v.
-       (let ((eol (point-at-eol)))
+       (let ((eol (line-end-position)))
          (if indent-tabs-mode
              (progn
                (skip-chars-forward "\t" eol)
@@ -242,11 +243,11 @@ ensure point doesn't jump due to white space trimming."
      (lambda (_prop beg end)
        (save-excursion
          (setq beg (progn (goto-char beg)
-                          (point-at-bol))
+                          (line-beginning-position))
                ;; Subtract one from end to overcome Emacs bug #17784, since we
                ;; always expand to end of line anyway, this should be OK.
                end (progn (goto-char (1- end))
-                          (point-at-eol))))
+                          (line-end-position))))
        (when (funcall ws-butler-trim-predicate beg end)
          (ws-butler-clean-region beg end))
        (setq last-end end)))
