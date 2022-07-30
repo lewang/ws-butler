@@ -319,7 +319,8 @@ for lines modified by you."
 ;;;###autoload
 (define-globalized-minor-mode ws-butler-global-mode ws-butler-mode
   (lambda ()
-    (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
+    (unless (or (apply #'derived-mode-p ws-butler-global-exempt-modes)
+                (minibufferp))
       (ws-butler-mode))))
 
 (provide 'ws-butler)
