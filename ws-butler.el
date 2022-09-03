@@ -320,7 +320,7 @@ for lines modified by you."
 (define-globalized-minor-mode ws-butler-global-mode ws-butler-mode
   (lambda ()
     (unless (or (apply #'derived-mode-p ws-butler-global-exempt-modes)
-                (minibufferp))
+                (not (buffer-file-name)))
       (ws-butler-mode))))
 
 (provide 'ws-butler)
