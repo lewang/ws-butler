@@ -98,6 +98,7 @@ changed in this specific way."
     term-mode
     eshell-mode
     diff-mode
+    message-mode
     markdown-mode)
   "Don't enable ws-butler in modes that inherit from these.
 
