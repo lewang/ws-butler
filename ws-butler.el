@@ -80,7 +80,7 @@ i.e. only the \"virtual\" space is preserved in the buffer."
 
 (defcustom ws-butler-convert-leading-tabs-or-spaces
   nil
-  "Make leading whitespace be tabs or spaces
+  "Make leading whitespace be tabs or spaces.
 
 If `indent-tabs-mode' is non-nil, call `tabify', else call
 `untabify'. Do neither if `smart-tabs-mode' is enabled for this
@@ -149,7 +149,7 @@ Also see `require-final-newline'."
      (replace-match ""))))
 
 (defun ws-butler-maybe-trim-eob-lines (last-modified-pos)
-  "Delete extra newlines at end of buffer if LAST-MODIFIED-POS is in the patch of excess newlines."
+  "Trim newlines at EOB if LAST-MODIFIED-POS is inside the excess newlines."
   (interactive (list nil))
   (unless buffer-read-only
     (unless last-modified-pos
@@ -183,7 +183,7 @@ replaced by spaces, and vice versa if t."
      (when (and ws-butler-convert-leading-tabs-or-spaces
                 (not (bound-and-true-p smart-tabs-mode)))
        ;; convert leading tabs to spaces or v.v.
-       (let ((eol (point-at-eol)))
+       (let ((eol (line-end-position)))
          (if indent-tabs-mode
              (progn
                (skip-chars-forward "\t" eol)
@@ -242,11 +242,11 @@ ensure point doesn't jump due to white space trimming."
      (lambda (_prop beg end)
        (save-excursion
          (setq beg (progn (goto-char beg)
-                          (point-at-bol))
+                          (line-end-position))
                ;; Subtract one from end to overcome Emacs bug #17784, since we
                ;; always expand to end of line anyway, this should be OK.
                end (progn (goto-char (1- end))
-                          (point-at-eol))))
+                          (line-end-position))))
        (when (funcall ws-butler-trim-predicate beg end)
          (ws-butler-clean-region beg end))
        (setq last-end end)))
@@ -259,6 +259,8 @@ ensure point doesn't jump due to white space trimming."
                              (remove-list-of-text-properties start end '(ws-butler-chg))))))
 
 (defun ws-butler-after-change (beg end length-before)
+  "Update ws-butler text properties.
+See `after-change-functions' for explanation of BEG, END & LENGTH-BEFORE."
   (let ((type (if (and (= beg end) (> length-before 0))
                   'delete
                 'chg)))
@@ -319,6 +321,7 @@ for lines modified by you."
 ;;;###autoload
 (define-globalized-minor-mode ws-butler-global-mode ws-butler-mode
   (lambda ()
+    "Enable `ws-butler-mode' unless current major mode is exempt."
     (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
       (ws-butler-mode))))
 
