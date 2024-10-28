@@ -92,7 +92,12 @@ changed in this specific way."
   :group 'ws-butler)
 
 (defcustom ws-butler-global-exempt-modes
-  '(markdown-mode)
+  '(special-mode
+    comint-mode
+    term-mode
+    eshell-mode
+    diff-mode
+    markdown-mode)
   "Don't enable ws-butler in modes that inherit from these.
 
 This should be a list of trailing whitespace significant major-modes."
@@ -140,7 +145,7 @@ Also see `require-final-newline'."
      ;;
      ;; We refuse to remove final-newline regardless of the value of
      ;; `require-final-newline'
-     (when (looking-at "\n\\(\n\\|\\'\\)")
+     (when (looking-at-p "\n\\(?:\n\\|\\'\\)")
        (forward-char 1)))
    (when require-final-newline
      (unless (bolp)
@@ -303,18 +308,18 @@ for lines modified by you."
   :group 'ws-butler
   (if ws-butler-mode
       (progn
-        (add-hook 'after-change-functions 'ws-butler-after-change t t)
-        (add-hook 'before-save-hook 'ws-butler-before-save t t)
-        (add-hook 'after-save-hook 'ws-butler-after-save t t)
-        (add-hook 'before-revert-hook 'ws-butler-before-revert t t)
-        (add-hook 'after-revert-hook 'ws-butler-after-save t t)
-        (add-hook 'edit-server-done-hook 'ws-butler-before-save t t))
-    (remove-hook 'after-change-functions 'ws-butler-after-change t)
-    (remove-hook 'before-save-hook 'ws-butler-before-save t)
-    (remove-hook 'after-save-hook 'ws-butler-after-save t)
-    (remove-hook 'before-revert-hook 'ws-butler-before-revert t)
-    (remove-hook 'after-revert-hook 'ws-butler-after-save t)
-    (remove-hook 'edit-server-done-hook 'ws-butler-before-save t)))
+        (add-hook 'after-change-functions #'ws-butler-after-change t t)
+        (add-hook 'before-save-hook #'ws-butler-before-save t t)
+        (add-hook 'after-save-hook #'ws-butler-after-save t t)
+        (add-hook 'before-revert-hook #'ws-butler-before-revert t t)
+        (add-hook 'after-revert-hook #'ws-butler-after-save t t)
+        (add-hook 'edit-server-done-hook #'ws-butler-before-save t t))
+    (remove-hook 'after-change-functions #'ws-butler-after-change t)
+    (remove-hook 'before-save-hook #'ws-butler-before-save t)
+    (remove-hook 'after-save-hook #'ws-butler-after-save t)
+    (remove-hook 'before-revert-hook #'ws-butler-before-revert t)
+    (remove-hook 'after-revert-hook #'ws-butler-after-save t)
+    (remove-hook 'edit-server-done-hook #'ws-butler-before-save t)))
 
 ;;;###autoload
 (define-globalized-minor-mode ws-butler-global-mode ws-butler-mode
