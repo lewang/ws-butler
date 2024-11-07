@@ -93,6 +93,7 @@ changed in this specific way."
 
 (defcustom ws-butler-global-exempt-modes
   '(special-mode
+    minibuffer-mode
     comint-mode
     term-mode
     eshell-mode
