@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/lewang/ws-butler.png)](http://travis-ci.org/lewang/ws-butler)
+[![NonGNU ELPA](https://elpa.nongnu.org/nongnu/ws-butler.svg)](https://elpa.nongnu.org/nongnu/ws-butler.html)
 
 ## ws-butler -- an unobtrusive way to trim spaces from end of line
 
