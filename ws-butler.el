@@ -1,4 +1,4 @@
-;;; ws-butler.el --- Unobtrusively remove trailing whitespace.
+;;; ws-butler.el --- Unobtrusively remove trailing whitespace -*- lexical-binding: t -*-
 
 ;; this file is not part of Emacs
 
