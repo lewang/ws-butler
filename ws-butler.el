@@ -14,8 +14,9 @@
 ;; Last-Updated:
 ;;           By:
 ;; URL: https://github.com/lewang/ws-butler
-;; Keywords:
+;; Keywords: convenience
 ;; Compatibility: Emacs 24
+;; Package-Requires: ((emacs "24.3"))
 
 ;;; Installation:
 
