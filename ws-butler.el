@@ -6,7 +6,7 @@
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 ;; Package-Requires: ((emacs "24.1"))
-;; Version: 1.0pre
+;; Version: 1.0
 ;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
 ;; Keywords: text
 
@@ -33,12 +33,14 @@
 
 ;;; News:
 
-;; Ver 1.0 YYYY/MM/DD Sean Whitton
+;; Ver 1.0 2025/02/18 Sean Whitton
+;;     Take over maintenance; maintain out of nongnu-elpa.git.
 ;;     Bump to version 1.0: core functionality not expected to change.
 ;;     Move customisation group from `convenience' to `text'.
 ;;     Rewrite docstrings.
 ;;     Fix accidental change `point-at-bol'->`line-end-position'.
 ;;     Exempt `message-mode' from `ws-butler-global-mode' by default.
+;;     Other tidying.
 
 ;;; Code:
 
