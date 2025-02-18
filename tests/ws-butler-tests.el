@@ -1,10 +1,6 @@
-
 (require 'ert)
+(require 'cl-lib)
 
-;; (require 'popup)
-
-;; for "every" function
-(require 'cl)
 (load-file "ws-butler.el")
 
 (defmacro ws-butler-test-with-test-buffer (&rest body)
@@ -28,7 +24,7 @@
   (ws-butler-test-with-common-setup
     (insert "a b c")
     (execute-kbd-macro (read-kbd-macro "M-DEL"))
-    (should (every #'identity (list 1 2 3)))
+    (should (cl-every #'identity (list 1 2 3)))
     (should (string-equal (buffer-string) "a b "))))
 
 (ert-deftest ws-butler-test-trim-predicate ()
