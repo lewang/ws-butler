@@ -1,55 +1,39 @@
-;;; ws-butler.el --- Unobtrusively remove trailing whitespace.
+;;; ws-butler.el --- Unobtrusively remove trailing whitespace  -*- lexical-binding:t -*-
 
-;; this file is not part of Emacs
+;; Copyright (C) 2013  Le Wang <l26wang@gmail.com>
 
-;; Copyright (C) 2013 Le Wang
-;; Author: Le Wang
-;; Maintainer: Le Wang
-;; Description: unobtrusively remove trailing whitespace
-;; Author: Le Wang
-;; Maintainer: Le Wang
+;; Author: Le Wang <l26wang@gmail.com>
+;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
+;; Package-Requires: ((emacs "24.1"))
+;; Version: 1.0pre
+;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
+;; Keywords: text
 
-;; Created: Sat Jan  5 16:49:23 2013 (+0800)
-;; Version: 0.7
-;; Last-Updated:
-;;           By:
-;; URL: https://github.com/lewang/ws-butler
-;; Keywords:
-;; Compatibility: Emacs 24
+;; This file is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
-;;; Installation:
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 
-;;
-;; To enable for all ruby-mode buffers, add to .emacs.el:
+;; You should have received a copy of the GNU General Public License
+;; along with this file.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; To enable for, e.g., all ruby-mode buffers, add to your init.el:
 ;;
 ;;      (require 'ws-butler)
 ;;      (add-hook 'ruby-mode-hook 'ws-butler-mode)
 ;;
 
-;;; Commentary:
+;;; News:
 
-;;
-;;
-;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 3, or
-;; (at your option) any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;; General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-;; Floor, Boston, MA 02110-1301, USA.
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ver 1.0 YYYY/MM/DD Sean Whitton
+;;     Bump to version 1.0: core functionality not expected to change.
 
 ;;; Code:
 
