@@ -289,12 +289,14 @@ only for lines modified by you."
     (remove-hook 'after-revert-hook #'ws-butler-after-save t)
     (remove-hook 'edit-server-done-hook #'ws-butler-before-save t)))
 
+(defun ws-butler--global-mode-turn-on ()
+  "Enable `ws-butler-mode' unless current major mode is exempt."
+  (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
+    (ws-butler-mode 1)))
+
 ;;;###autoload
-(define-globalized-minor-mode ws-butler-global-mode ws-butler-mode
-  (lambda ()
-    "Enable `ws-butler-mode' unless current major mode is exempt."
-    (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
-      (ws-butler-mode 1))))
+(define-globalized-minor-mode ws-butler-global-mode
+  ws-butler-mode ws-butler--global-mode-turn-on)
 
 (provide 'ws-butler)
 
