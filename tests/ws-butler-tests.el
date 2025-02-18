@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (require 'ert)
 (require 'cl-lib)
 

@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Usage:
 ;;
 ;;   emacs -Q -l tests/run-test.el           # interactive mode
