@@ -128,7 +128,7 @@ Affected by `require-final-newline', which see."
   (unless buffer-read-only
     (unless last-modified-pos
       (ws-butler-map-changes
-       (lambda (_prop beg end)
+       (lambda (_prop _beg end)
          (setq last-modified-pos end))))
     ;; trim EOF newlines if required
     (when last-modified-pos
