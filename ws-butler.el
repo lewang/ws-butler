@@ -38,6 +38,7 @@
 ;;     Move customisation group from `convenience' to `text'.
 ;;     Rewrite docstrings.
 ;;     Fix accidental change `point-at-bol'->`line-end-position'.
+;;     Exempt `message-mode' from `ws-butler-global-mode' by default.
 
 ;;; Code:
 
@@ -70,6 +71,7 @@ If `smart-tabs-mode' is enabled, these conversions are suppressed."
     eshell-mode
 
     diff-mode
+    message-mode
     markdown-mode)
   "Trailing whitespace-significant major modes.
 `ws-butler-mode' will not activate in these modes or in their derivatives."
