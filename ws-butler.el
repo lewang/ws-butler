@@ -40,9 +40,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl-lib))
-
 (defgroup ws-butler nil
   "Unobtrusive whitespace deletion, like a butler."
   :group 'text)
