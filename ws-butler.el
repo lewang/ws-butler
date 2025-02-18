@@ -140,7 +140,8 @@ Affected by `require-final-newline', which see."
        (goto-char (point-max))
        (skip-chars-backward " \t\n\v")
        (let ((printable-point-max (point)))
-         (when (and (funcall ws-butler-trim-predicate printable-point-max (point-max))
+         (when (and (funcall ws-butler-trim-predicate
+			     printable-point-max (point-max))
                   (>= last-modified-pos printable-point-max))
            (ws-butler-trim-eob-lines))))))
   ;; clean return code for hooks
@@ -225,8 +226,9 @@ Respects `ws-butler-keep-whitespace-before-point', which see."
 (defun ws-butler-clear-properties ()
   "Clear all `ws-butler-mode' text properties in the buffer."
   (with-silent-modifications
-    (ws-butler-map-changes (lambda (_prop start end)
-                             (remove-list-of-text-properties start end '(ws-butler-chg))))))
+    (ws-butler-map-changes
+     (lambda (_prop start end)
+       (remove-list-of-text-properties start end '(ws-butler-chg))))))
 
 (defun ws-butler-after-change (beg end length-before)
   "Update ws-butler text properties.
@@ -247,7 +249,6 @@ The arguments are as to members of `after-change-functions', which see."
 
 (defun ws-butler-after-save ()
   "Restore trimmed whitespace before point."
-
   (ws-butler-clear-properties)
   ;; go to saved line+col
   (when ws-butler-presave-coord
@@ -255,7 +256,8 @@ The arguments are as to members of `after-change-functions', which see."
       (ws-butler-with-save
        (widen)
        (goto-char (point-min))
-       (setq remaining-lines (forward-line (1- (car ws-butler-presave-coord)))))
+       (setq remaining-lines
+	     (forward-line (1- (car ws-butler-presave-coord)))))
       (unless (eq remaining-lines 0)
         (insert (make-string remaining-lines ?\n))))
     (move-to-column (cadr ws-butler-presave-coord) t)
