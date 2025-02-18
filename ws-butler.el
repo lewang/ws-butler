@@ -1,6 +1,7 @@
 ;;; ws-butler.el --- Unobtrusively remove trailing whitespace  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2013  Le Wang <l26wang@gmail.com>
+;; Copyright (C) 2025  Sean Whitton <spwhitton@spwhitton.name>
 
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
@@ -35,6 +36,7 @@
 ;; Ver 1.0 YYYY/MM/DD Sean Whitton
 ;;     Bump to version 1.0: core functionality not expected to change.
 ;;     Move customisation group from `convenience' to `text'.
+;;     Rewrite docstrings.
 
 ;;; Code:
 
@@ -42,62 +44,54 @@
   (require 'cl-lib))
 
 (defgroup ws-butler nil
-  "Unobtrusively whitespace deletion like a butler."
+  "Unobtrusive whitespace deletion, like a butler."
   :group 'text)
 
-(defcustom ws-butler-keep-whitespace-before-point
-  t
-  "Keep whitespace at current point after save.
-
-That is to say, if whitespace around is trimmed, perform the
-cleanup only on disk, don't move the point in the buffer.
-
-i.e. only the \"virtual\" space is preserved in the buffer."
+(defcustom ws-butler-keep-whitespace-before-point t
+  "If non-nil, restore to the buffer trimmed whitespace right before point.
+The effect is that cleanup of whitespace right before point is performed
+on only the visited file on disk, while point in the buffer does not move.
+This means that point does not jump when whitespace is trimmed."
   :type 'boolean
   :group 'ws-butler)
 
-(defcustom ws-butler-convert-leading-tabs-or-spaces
-  nil
-  "Make leading whitespace be tabs or spaces.
-
-If `indent-tabs-mode' is non-nil, call `tabify', else call
-`untabify'. Do neither if `smart-tabs-mode' is enabled for this
-buffer. This is off by default because it's unwanted if you
-occasionally edit files where leading whitespace should not be
-changed in this specific way."
-
+(defcustom ws-butler-convert-leading-tabs-or-spaces nil
+  "If non-nil, apply `indent-tabs-mode' to leading indentation when saving.
+If `indent-tabs-mode' is non-nil, convert leading indentation to use tabs,
+like `tabify'.  Otherwise, replace all tabs with spaces, like `untabify'.
+If `smart-tabs-mode' is enabled, these conversions are suppressed."
   :type 'boolean
   :group 'ws-butler)
 
 (defcustom ws-butler-global-exempt-modes
   '(special-mode
     minibuffer-mode
+
     comint-mode
     term-mode
     eshell-mode
+
     diff-mode
     markdown-mode)
-  "Don't enable ws-butler in modes that inherit from these.
-
-This should be a list of trailing whitespace significant major-modes."
+  "Trailing whitespace-significant major modes.
+`ws-butler-mode' will not activate in these modes or in their derivatives."
   :type '(repeat (symbol :tag "Major mode"))
   :group 'ws-butler)
 
 (defcustom ws-butler-trim-predicate
   (lambda (_beg _end) t)
-  "Return true for regions that should be trimmed.
-
-Expects 2 arguments - beginning and end of a region.
-Should return a truthy value for regions that should
-have their trailing whitespace trimmed.
-When not defined all regions are trimmed."
+  "Function to exclude regions from whitespace trimming.
+Called with two arguments delimiting a region of the current buffer.
+If the function returns non-nil, trailing whitespace in that region will be
+trimmed.  The default is to trim everywhere."
   :type 'function
   :group 'ws-butler)
 
 (defvar ws-butler-saved)
 
 (defmacro ws-butler-with-save (&rest forms)
-  "Run FORMS with restriction and excursion saved once."
+  "Like `save-excursion' and `save-restriction', but only once.
+If within the scope of another use of this macro, just evaluate FORMS."
   (declare (debug (body)))
   `(if (and (boundp 'ws-butler-saved)
             ws-butler-saved)
@@ -109,8 +103,8 @@ When not defined all regions are trimmed."
            ,@forms)))))
 
 (defun ws-butler-trim-eob-lines ()
-  "Trim lines at EOB in efficient manner.
-Also see `require-final-newline'."
+  "Efficiently trim blank lines at end-of-buffer.
+Affected by `require-final-newline', which see."
   (ws-butler-with-save
    (widen)
    ;; we need to clean up multiple blank lines at EOF to just one.  Or if
@@ -133,7 +127,7 @@ Also see `require-final-newline'."
      (replace-match ""))))
 
 (defun ws-butler-maybe-trim-eob-lines (last-modified-pos)
-  "Trim newlines at EOB if LAST-MODIFIED-POS is inside the excess newlines."
+  "Trim empty lines at end-of-buffer if LAST-MODIFIED-POS is within them."
   (interactive (list nil))
   (unless buffer-read-only
     (unless last-modified-pos
@@ -154,10 +148,8 @@ Also see `require-final-newline'."
   nil)
 
 (defun ws-butler-clean-region (beg end)
-  "Delete trailing blanks in region BEG END.
-
-If `indent-tabs-mode' is nil, then tabs in indentation are
-replaced by spaces, and vice versa if t."
+  "Delete trailing whitespace in the region delimited by BEG and END.
+Respects `ws-butler-convert-leading-tabs-or-spaces', which see."
   (interactive "*r")
   (ws-butler-with-save
    (narrow-to-region beg end)
@@ -191,12 +183,10 @@ replaced by spaces, and vice versa if t."
 This is the key to the virtual spaces preserving indentation mechanism.")
 (make-variable-buffer-local 'ws-butler-presave-coord)
 
+;; Call FUNC with each changed region (START-POSITION END-POSITION).
+;; This simply uses an end marker since we are modifying the buffer in place.
+;; See also `hilit-chg-map-changes'.
 (defun ws-butler-map-changes (func &optional start-position end-position)
-  "Call FUNC with each changed region (START-POSITION END-POSITION).
-
-This simply uses an end marker since we are modifying the buffer
-in place."
-  ;; See `hilit-chg-map-changes'.
   (let ((start (or start-position (point-min)))
         (limit (copy-marker (or end-position (point-max))))
         prop end)
@@ -210,10 +200,7 @@ in place."
 
 (defun ws-butler-before-save ()
   "Trim white space before save.
-
-Setting `ws-butler-keep-whitespace-before-point' will also
-ensure point doesn't jump due to white space trimming."
-
+Respects `ws-butler-keep-whitespace-before-point', which see."
   ;; save data to restore later
   (when ws-butler-keep-whitespace-before-point
     (ws-butler-with-save
@@ -237,14 +224,14 @@ ensure point doesn't jump due to white space trimming."
     (ws-butler-maybe-trim-eob-lines last-end)))
 
 (defun ws-butler-clear-properties ()
-  "Clear all ws-butler text properties in buffer."
+  "Clear all `ws-butler-mode' text properties in the buffer."
   (with-silent-modifications
     (ws-butler-map-changes (lambda (_prop start end)
                              (remove-list-of-text-properties start end '(ws-butler-chg))))))
 
 (defun ws-butler-after-change (beg end length-before)
   "Update ws-butler text properties.
-See `after-change-functions' for explanation of BEG, END & LENGTH-BEFORE."
+The arguments are as to members of `after-change-functions', which see."
   (let ((type (if (and (= beg end) (> length-before 0))
                   'delete
                 'chg)))
@@ -281,10 +268,9 @@ See `after-change-functions' for explanation of BEG, END & LENGTH-BEFORE."
 
 ;;;###autoload
 (define-minor-mode ws-butler-mode
-  "White space cleanup, without obtrusive white space removal.
-
-Whitespaces at EOL and EOF are trimmed upon file save, and only
-for lines modified by you."
+  "Whitespace cleanup without obtrusive whitespace removal.
+Whitespaces at end-of-line and end-of-buffer are trimmed upon save, but
+only for lines modified by you."
   :lighter " wb"
   :group 'ws-butler
   (if ws-butler-mode
