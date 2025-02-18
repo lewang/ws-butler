@@ -78,8 +78,7 @@ If `smart-tabs-mode' is enabled, these conversions are suppressed."
   :type '(repeat (symbol :tag "Major mode"))
   :group 'ws-butler)
 
-(defcustom ws-butler-trim-predicate
-  (lambda (_beg _end) t)
+(defcustom ws-butler-trim-predicate #'always
   "Function to exclude regions from whitespace trimming.
 Called with two arguments delimiting a region of the current buffer.
 If the function returns non-nil, trailing whitespace in that region will be
