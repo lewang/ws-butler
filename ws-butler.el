@@ -163,12 +163,12 @@ Respects `ws-butler-convert-leading-tabs-or-spaces', which see."
          (if indent-tabs-mode
              (progn
                (skip-chars-forward "\t" eol)
-               (when (eq (char-after) ?\ )
-                 (tabify (point) (progn (skip-chars-forward " \t" eol)
+               (when (eq (char-after) ?\s)
+                 (tabify (point) (progn (skip-chars-forward "\s\t" eol)
                                         (point)))))
            (skip-chars-forward " " eol)
-           (when (eq (char-after) ?\t )
-             (untabify (point) (progn (skip-chars-forward " \t" eol)
+           (when (eq (char-after) ?\t)
+             (untabify (point) (progn (skip-chars-forward "\s\t" eol)
                                       (point)))))))
      (end-of-line)
      (delete-horizontal-space)
