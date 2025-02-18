@@ -29,6 +29,8 @@
     (should (cl-every #'identity (list 1 2 3)))
     (should (string-equal (buffer-string) "a b "))))
 
+(declare-function ws-butler-before-save "ws-butler")
+
 (ert-deftest ws-butler-test-trim-predicate ()
   "Tests `ws-butler-trim-predicate'."
   (ws-butler-test-with-common-setup
