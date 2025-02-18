@@ -298,5 +298,4 @@ only for lines modified by you."
 
 (provide 'ws-butler)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ws-butler.el ends here
