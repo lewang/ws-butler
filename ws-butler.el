@@ -291,7 +291,7 @@ only for lines modified by you."
   (lambda ()
     "Enable `ws-butler-mode' unless current major mode is exempt."
     (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
-      (ws-butler-mode))))
+      (ws-butler-mode 1))))
 
 (provide 'ws-butler)
 
