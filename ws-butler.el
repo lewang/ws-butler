@@ -34,6 +34,7 @@
 
 ;; Ver 1.0 YYYY/MM/DD Sean Whitton
 ;;     Bump to version 1.0: core functionality not expected to change.
+;;     Move customisation group from `convenience' to `text'.
 
 ;;; Code:
 
@@ -42,7 +43,7 @@
 
 (defgroup ws-butler nil
   "Unobtrusively whitespace deletion like a butler."
-  :group 'convenience)
+  :group 'text)
 
 (defcustom ws-butler-keep-whitespace-before-point
   t
