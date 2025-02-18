@@ -1,6 +1,6 @@
 ;;; ws-butler.el --- Unobtrusively remove trailing whitespace  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2013  Le Wang <l26wang@gmail.com>
+;; Copyright (C) 2012-2016  Le Wang <l26wang@gmail.com>
 ;; Copyright (C) 2025  Sean Whitton <spwhitton@spwhitton.name>
 
 ;; Author: Le Wang <l26wang@gmail.com>
