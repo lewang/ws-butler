@@ -37,6 +37,7 @@
 ;;     Bump to version 1.0: core functionality not expected to change.
 ;;     Move customisation group from `convenience' to `text'.
 ;;     Rewrite docstrings.
+;;     Fix accidental change `point-at-bol'->`line-end-position'.
 
 ;;; Code:
 
@@ -210,7 +211,7 @@ Respects `ws-butler-keep-whitespace-before-point', which see."
      (lambda (_prop beg end)
        (save-excursion
          (setq beg (progn (goto-char beg)
-                          (line-end-position))
+                          (line-beginning-position))
                ;; Subtract one from end to overcome Emacs bug #17784, since we
                ;; always expand to end of line anyway, this should be OK.
                end (progn (goto-char (1- end))
