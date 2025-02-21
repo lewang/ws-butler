@@ -6,7 +6,7 @@
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 ;; Package-Requires: ((emacs "24.1"))
-;; Version: 1.1pre
+;; Version: 1.1
 ;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
 ;; Keywords: text
 
@@ -33,7 +33,7 @@
 
 ;;; News:
 
-;; Ver 1.1 YYYY/MM/DD Sean Whitton
+;; Ver 1.1 2025/02/21 Sean Whitton
 ;;     Exempt `compilation-mode' from `ws-butler-global-mode' by default.
 ;;     Clarify docstring of `ws-butler-global-exempt-modes'.
 ;;
