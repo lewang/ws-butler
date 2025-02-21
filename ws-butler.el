@@ -212,9 +212,8 @@ Respects `ws-butler-keep-whitespace-before-point', which see."
   (when ws-butler-keep-whitespace-before-point
     (ws-butler-with-save
      (widen)
-     (setq ws-butler-presave-coord (list
-                                    (line-number-at-pos (point))
-                                    (current-column)))))
+     (setq ws-butler-presave-coord (list (line-number-at-pos (point))
+					 (current-column)))))
   (let (last-end)
     (ws-butler-map-changes
      (lambda (_prop beg end)
