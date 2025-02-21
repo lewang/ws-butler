@@ -35,6 +35,7 @@
 
 ;; Ver 1.1 YYYY/MM/DD Sean Whitton
 ;;     Exempt `compilation-mode' from `ws-butler-global-mode' by default.
+;;     Clarify docstring of `ws-butler-global-exempt-modes'.
 ;;
 ;; Ver 1.0 2025/02/18 Sean Whitton
 ;;     Take over maintenance; maintain out of nongnu-elpa.git.
@@ -80,7 +81,8 @@ If `smart-tabs-mode' is enabled, these conversions are suppressed."
     message-mode
     markdown-mode)
   "Trailing whitespace-significant major modes.
-`ws-butler-mode' will not activate in these modes or in their derivatives."
+`ws-butler-global-mode' will not activate `ws-butler-mode' in these modes,
+or in their derivatives."
   :type '(repeat (symbol :tag "Major mode"))
   :group 'ws-butler)
 
