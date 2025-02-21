@@ -6,7 +6,7 @@
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 ;; Package-Requires: ((emacs "24.1"))
-;; Version: 1.0
+;; Version: 1.1pre
 ;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
 ;; Keywords: text
 
@@ -33,6 +33,8 @@
 
 ;;; News:
 
+;; Ver 1.1 YYYY/MM/DD Sean Whitton
+;;
 ;; Ver 1.0 2025/02/18 Sean Whitton
 ;;     Take over maintenance; maintain out of nongnu-elpa.git.
 ;;     Bump to version 1.0: core functionality not expected to change.
@@ -291,6 +293,19 @@ only for lines modified by you."
     (remove-hook 'after-revert-hook #'ws-butler-after-save t)
     (remove-hook 'edit-server-done-hook #'ws-butler-before-save t)))
 
+;; It would be better to use a `:predicate' parameter to
+;; `define-globalized-minor-mode', and mark `ws-butler-global-exempt-modes'
+;; obsolete.  We could probably still honour a user's custom
+;; `ws-butler-global-exempt-modes', if it was set, in this TURN-ON function.
+;; Here is an example of a useful custom, user-specified predicate:
+;;
+;;     '((not markdown-mode
+;;            message-mode
+;;            lisp-interaction-mode)
+;;       prog-mode conf-mode text-mode)
+;;
+;; However, this would mean bumping our minimum required Emacs version to
+;; 28.1.  For a package like this one, I think it is too soon for that.
 (defun ws-butler--global-mode-turn-on ()
   "Enable `ws-butler-mode' unless current major mode is exempt."
   (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
