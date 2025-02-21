@@ -98,8 +98,7 @@ trimmed.  The default is to trim everywhere."
   "Like `save-excursion' and `save-restriction', but only once.
 If within the scope of another use of this macro, just evaluate FORMS."
   (declare (debug (body)))
-  `(if (and (boundp 'ws-butler-saved)
-            ws-butler-saved)
+  `(if (bound-and-true-p ws-butler-saved)
        (progn
          ,@forms)
      (let ((ws-butler-saved t))
