@@ -34,6 +34,7 @@
 ;;; News:
 
 ;; Ver 1.1 YYYY/MM/DD Sean Whitton
+;;     Exempt `compilation-mode' from `ws-butler-global-mode' by default.
 ;;
 ;; Ver 1.0 2025/02/18 Sean Whitton
 ;;     Take over maintenance; maintain out of nongnu-elpa.git.
@@ -73,6 +74,7 @@ If `smart-tabs-mode' is enabled, these conversions are suppressed."
     comint-mode
     term-mode
     eshell-mode
+    compilation-mode
 
     diff-mode
     message-mode
