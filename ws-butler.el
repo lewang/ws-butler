@@ -39,6 +39,7 @@
 ;;     `ws-butler-mode' if it does.
 ;;     Remove entries from `ws-butler-global-exempt-modes' that the preceding
 ;;     changes renders redundant.
+;;     Exempt `org-agenda-mode' from `ws-butler-global-mode' by default.
 ;;
 ;; Ver 1.1 2025/02/21 Sean Whitton
 ;;     Exempt `compilation-mode' from `ws-butler-global-mode' by default.
@@ -78,6 +79,8 @@ If `smart-tabs-mode' is enabled, these conversions are suppressed."
 (defcustom ws-butler-global-exempt-modes
   '(special-mode
     minibuffer-mode
+
+    org-agenda-mode
 
     message-mode
     markdown-mode)
