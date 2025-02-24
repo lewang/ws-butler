@@ -6,7 +6,7 @@
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 ;; Package-Requires: ((emacs "24.1"))
-;; Version: 1.1
+;; Version: 1.2pre
 ;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
 ;; Keywords: text
 
@@ -33,6 +33,13 @@
 
 ;;; News:
 
+;; Ver 1.2 YYYY/MM/DD Sean Whitton
+;;     When `special-mode' is in `ws-butler-global-exempt-modes', also check
+;;     whether a mode has a `mode-class' of `special', and don't activate
+;;     `ws-butler-mode' if it does.
+;;     Remove entries from `ws-butler-global-exempt-modes' that the preceding
+;;     changes renders redundant.
+;;
 ;; Ver 1.1 2025/02/21 Sean Whitton
 ;;     Exempt `compilation-mode' from `ws-butler-global-mode' by default.
 ;;     Clarify docstring of `ws-butler-global-exempt-modes'.
@@ -72,17 +79,13 @@ If `smart-tabs-mode' is enabled, these conversions are suppressed."
   '(special-mode
     minibuffer-mode
 
-    comint-mode
-    term-mode
-    eshell-mode
-    compilation-mode
-
-    diff-mode
     message-mode
     markdown-mode)
   "Trailing whitespace-significant major modes.
 `ws-butler-global-mode' will not activate `ws-butler-mode' in these modes,
-or in their derivatives."
+or in their derivatives.
+If this list contains `special-mode', then in addition, `ws-butler-mode' will
+not activate in all modes with a `mode-class' of `special'."
   :type '(repeat (symbol :tag "Major mode"))
   :group 'ws-butler)
 
@@ -308,9 +311,13 @@ only for lines modified by you."
 ;;
 ;; However, this would mean bumping our minimum required Emacs version to
 ;; 28.1.  For a package like this one, I think it is too soon for that.
+;;
+;; We would also want to retain the special handling of `special-mode'.
 (defun ws-butler--global-mode-turn-on ()
   "Enable `ws-butler-mode' unless current major mode is exempt."
-  (unless (apply #'derived-mode-p ws-butler-global-exempt-modes)
+  (unless (or (and (memq 'special-mode ws-butler-global-exempt-modes)
+		   (eq (get major-mode 'mode-class) 'special))
+	      (apply #'derived-mode-p ws-butler-global-exempt-modes))
     (ws-butler-mode 1)))
 
 ;;;###autoload
