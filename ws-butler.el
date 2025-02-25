@@ -6,7 +6,7 @@
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 ;; Package-Requires: ((emacs "24.1"))
-;; Version: 1.2pre
+;; Version: 1.2
 ;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
 ;; Keywords: text
 
@@ -33,7 +33,7 @@
 
 ;;; News:
 
-;; Ver 1.2 YYYY/MM/DD Sean Whitton
+;; Ver 1.2 2025/02/25 Sean Whitton
 ;;     When `special-mode' is in `ws-butler-global-exempt-modes', also check
 ;;     whether a mode has a `mode-class' of `special', and don't activate
 ;;     `ws-butler-mode' if it does.
