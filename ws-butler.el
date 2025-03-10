@@ -92,7 +92,8 @@ not activate in all modes with a `mode-class' of `special'."
   :type '(repeat (symbol :tag "Major mode"))
   :group 'ws-butler)
 
-(defcustom ws-butler-trim-predicate #'always
+(defcustom ws-butler-trim-predicate
+  (lambda (_beg _end) t)
   "Function to exclude regions from whitespace trimming.
 Called with two arguments delimiting a region of the current buffer.
 If the function returns non-nil, trailing whitespace in that region will be
