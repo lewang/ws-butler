@@ -6,7 +6,7 @@
 ;; Author: Le Wang <l26wang@gmail.com>
 ;; Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 ;; Package-Requires: ((emacs "24.1"))
-;; Version: 1.2
+;; Version: 1.3
 ;; URL: https://elpa.nongnu.org/nongnu/ws-butler.html
 ;; Keywords: text
 
@@ -33,6 +33,10 @@
 
 ;;; News:
 
+;; Ver 1.3 2025/03/10 Sean Whitton
+;;     Replace a use of `always' to retain compatibility with older Emacs.
+;;     Thanks to Chris Rayner for the reporting the problem.
+;;
 ;; Ver 1.2 2025/02/25 Sean Whitton
 ;;     When `special-mode' is in `ws-butler-global-exempt-modes', also check
 ;;     whether a mode has a `mode-class' of `special', and don't activate
