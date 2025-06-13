@@ -1,31 +1,35 @@
 [![Build Status](https://travis-ci.org/lewang/ws-butler.png)](http://travis-ci.org/lewang/ws-butler)
 [![NonGNU ELPA](https://elpa.nongnu.org/nongnu/ws-butler.svg)](https://elpa.nongnu.org/nongnu/ws-butler.html)
 
-## ws-butler -- an unobtrusive way to trim spaces from end of line
+## ws-butler -- an unobtrusive way to trim whitespace
 
-- Only lines touched get trimmed.  If the white space at end of buffer is
-  changed, then blank lines at the end of buffer are truncated respecting
-  `require-final-newline`.
-
-- Trimming only happens when saving.
+1. Only lines edited get meaningless whitespace trimmed (e.g. end-of-line).
+2. Trimming only happens when saving.
 
 ## What does unobtrusive mean?
 
-The user is not made explicitly aware when trimming happens.  You keep working
-and the butler takes care of whitespace for you.
+"Unobtrusive" is doing double duty here.
 
-This means if point is at a location that was trimmed, point is not moved, but
-the data on disk has been cleaned up (revert the buffer to confirm).
+1. `ws-butler` is keeping frivolous whitespace at bay in the background.
+    - The user doesn't enable `show-trailing-whitespace`, seeing whitespace is
+      wasted mental energy.
+2. In a cooperative environment, the user is considerate of other people's time
+   by not making PRs that contain meaningless whitespace change.
 
 ### Not moving point because of space deletion.
 
-By default, ws-butler preserves "virtual spaces" in front of point if necessary.  The file on disk is cleaned up however.
+By default, ws-butler preserves "virtual spaces" in front of point if necessary.
+The file on disk is cleaned up however.
 
 This can be disabled with `ws-butler-keep-whitespace-before-point`.
 
 #### Trimming only specific lines.
 
-There might be lines you don't want to get trimmed, e.g. spaces in multiline strings.  The behavior can be customized through `ws-butler-trim-predicate`.  This variable should hold a function that expects 2 arguments (region beginning and end) and should return true only for regions that one wants to get trimmed. As an example
+There might be lines you don't want to get trimmed, e.g. spaces in multi-line
+strings. The behavior can be customized through `ws-butler-trim-predicate`. This
+variable should hold a function that expects 2 arguments (region beginning and
+end) and should return true only for regions that one wants to get trimmed. As
+an example
 
     (setq ws-butler-trim-predicate
           (lambda (beg end)
@@ -35,11 +39,13 @@ There might be lines you don't want to get trimmed, e.g. spaces in multiline str
 
 ## Installation
 
-### Debian 9 or later or Ubuntu 16.10 or later
+### `use-package` configuration
 
-`apt-get install elpa-ws-butler`
+(use-package ws-butler
+  :ensure t
+  :hook (prog-mode . ws-butler-mode))
 
-### Configuration
+### Manual Configuration
 
 To use ws-butler, require it and add ws-butler-mode as a hook on any mode
 where you would like it to be enabled. For example, to enable for all 
@@ -48,7 +54,14 @@ programming language modes, add this to your .emacs:
     (require 'ws-butler)
     (add-hook 'prog-mode-hook #'ws-butler-mode)
 
-Alternatively, you can use ws-butler-global-mode to turn it on everywhere.
+
+### Global mode
+
+Alternatively, you can use `ws-butler-global-mode` to turn it on everywhere.
+
+### Debian 9 or later or Ubuntu 16.10 or later
+
+`apt-get install elpa-ws-butler`
 
 ## History
 
